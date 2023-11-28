@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         String formattedDateTime = currentDateTime.format(formatter);
 
         mFbDbRef.child("Test2").setValue("HI There Test from AVR");
-        mFbDbRef.child("Test").setValue("HI There TESinh Kristian: " + formattedDateTime);
+        mFbDbRef.child("Test").setValue("HI There TESTING Kristian: " + formattedDateTime);
 
         //VIEWS
         mTCP_MessageReceived = "No TCP Message Received";
