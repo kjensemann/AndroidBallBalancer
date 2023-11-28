@@ -2,13 +2,8 @@ package com.example.avr_ballbalancerapp;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -26,23 +21,17 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IFillFormatter;
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.EntryXComparator;
-import com.github.mikephil.charting.utils.Utils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     private TCP_ClientMain newTCP_ClientMain;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -388,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChartDoubleTapped(MotionEvent me) {
 
-                Snackbar.make(lineChart, "Extend X-axit to 0?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
+                Snackbar.make(lineChart, "Extend X-axis to 0?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         xAxis.setAxisMinimum(0); //Ensures we can see the entire plot
