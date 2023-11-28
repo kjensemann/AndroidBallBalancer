@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "385992513232",
+    "firebase_url": "https://balancerfirebase.firebaseio.com",
+    "project_id": "balancerfirebase",
+    "storage_bucket": "balancerfirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385992513232:android:8921546e98f080671430d5",
+        "android_client_info": {
+          "package_name": "com.example.android.balanceapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "385992513232-as5cr911nhacgrac524adq9bpd5sr0ck.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIByMbRC2qEhsjOhYMeGum3SopCi4H4pc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "385992513232-as5cr911nhacgrac524adq9bpd5sr0ck.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385992513232:android:2a92bd4c19bed8d21430d5",
+        "android_client_info": {
+          "package_name": "com.example.avr_ballbalancerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "385992513232-as5cr911nhacgrac524adq9bpd5sr0ck.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIByMbRC2qEhsjOhYMeGum3SopCi4H4pc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "385992513232-as5cr911nhacgrac524adq9bpd5sr0ck.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

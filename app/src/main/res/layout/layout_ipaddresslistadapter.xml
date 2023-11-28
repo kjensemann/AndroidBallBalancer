@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvIPAddrTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="55dp"
+        android:text="TextView"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:id="@+id/etDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvIPAddrTitle"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="Home Server1"
+        android:text="Name" />
+
+    <EditText
+        android:id="@+id/etIPAddrNr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etDescription"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="e.g. 192.168.10.188"
+        android:text="Name" />
+
+    <EditText
+        android:id="@+id/etPortNr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etIPAddrNr"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="8078"
+        />
+
+    <ImageView
+        android:id="@+id/ivSelectedIcon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignBottom="@+id/etIPAddrNr"
+        android:layout_marginStart="-45dp"
+        android:layout_marginBottom="5dp"
+        android:layout_toEndOf="@+id/etIPAddrNr"
+        app:srcCompat="@drawable/fbdb_plain_512x512" />
+
+    <ImageView
+        android:id="@+id/imageView_Port"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="5dp"
+        android:layout_alignParentStart="@+id/etPortNr"
+        android:layout_marginBottom="5dp"
+        android:layout_alignBottom="@id/etPortNr"
+        app:srcCompat="@drawable/cable24px_png" />
+
+    <ImageView
+        android:id="@+id/imageView_IP_Addr"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="5dp"
+        android:layout_alignParentStart="@+id/etIPAddrNr"
+        android:layout_marginBottom="5dp"
+        android:layout_alignBottom="@id/etIPAddrNr"
+        app:srcCompat="@drawable/schema24px_png" />
+    <ImageView
+        android:id="@+id/imageView_IP_Description"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="5dp"
+        android:layout_alignParentStart="@+id/etDescription"
+        android:layout_marginBottom="5dp"
+        android:layout_alignBottom="@id/etDescription"
+        app:srcCompat="@drawable/description24px_png" />
+
+</RelativeLayout>
