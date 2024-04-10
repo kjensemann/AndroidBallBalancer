@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     double[] ansDbl = new double[dataLengthInt/2];
                     int k = 0;
 
-                    for (int i = 0; i < dataLengthInt; i = i+2) //Takes every two consecutive bytes and joins them to one 16bit usigned char.
+                    for (int i = 0; i < dataLengthInt; i = i+2) //Takes every two consecutive bytes and joins them to one 16bit unsigned char.
                     {
                         char short1,short2, ans;
 
