@@ -16,7 +16,7 @@ public class CustomMarkerView extends MarkerView {
         super(context, layoutResource);
         tvContent = (TextView) findViewById(R.id.tvContent);
     }
-
+    
     @Override
     public MPPointF getOffset() {
         return super.getOffset();
