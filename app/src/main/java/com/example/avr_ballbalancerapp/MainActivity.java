@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private IDataSet<Entry> iDataSet;
     private LineDataSet PV_LineDataSet; //Process Variable (e.g. mm distance)
     private LineDataSet CV_LineDataSet; //Control Variable
-    private LineDataSet set1, set2, SP_LineDataSet;
+    private LineDataSet set1, set2;
 
     private SeekBar setPointSeekBar;
     private TextView tvSetPoint;
@@ -67,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
     //MP_PlotValues
     private ArrayList<Entry> PID_OutputValuesArrayList = new ArrayList<>();
     private ArrayList<Entry>  PID_PVValuesArrayList = new ArrayList<>();
-    private ArrayList<Entry> PID_SPValuesArrayList = new ArrayList<>();
+
+    //clsBallControllerDataObjects - Which are stored and can be plotted
+    private clsBallControllerData mBallControllerDataSelected;
+    private List<clsBallControllerData> BallControllerDataObjectList = new ArrayList<>();
 
     //TEST NEW TCP CLIENT
     private Button newTCP_Button;
@@ -218,6 +222,15 @@ public class MainActivity extends AppCompatActivity {
                     //Get PID OutPut Values - Servo Pos
                     //Get PID PV Values - Distance
 
+                    //Set up Object clsBallControllerData, and add to global collection of such objects
+                    mBallControllerDataSelected = new clsBallControllerData();
+                    BallControllerDataObjectList.add(mBallControllerDataSelected);
+                    mBallControllerDataSelected.setPID_RawOutPutArray(PID_OutPutArray);     //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
+                    mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
+
+                    //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...
+
+                    //------- OLD WAY TO PLOT DATA TO LINECHART - TO BE DELETED!!
                     for (int i = 0; i < dataLengthInt/4; i++) {
                         float val = (float)PID_OutPutArray[i];
                         PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
@@ -227,8 +240,8 @@ public class MainActivity extends AppCompatActivity {
                         //PID_PVValuesArrayList.add(new Entry(lastPlotInt, val2)); //Set1 No calculation
 
                         double PV_val_dbl1;
-                        val2 = val2/1024*5;
-                        PV_val_dbl1 = sharp_get_mm_from_volt((double)val2);
+                        val2 = val2/1024*5; //Converts it to
+                        PV_val_dbl1 = sharp_get_mm_from_volt(val2);
                         PID_PVValuesArrayList.add(new Entry(lastPlotInt, (float)PV_val_dbl1)); //Set1 - Calculated value
 
                         lastPlotInt++;
@@ -240,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                     setData(100, 100);
 
                     lineChart.invalidate();
-
+                    //------- END OLD WAY TO PLOT DATA -----------
                 }
             }
 
@@ -476,10 +489,10 @@ public class MainActivity extends AppCompatActivity {
             set1 = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
             set2 = (LineDataSet) lineChart.getData().getDataSetByIndex(1);
 
-            Collections.sort(PID_PVValuesArrayList, new EntryXComparator());
+            PID_PVValuesArrayList.sort(new EntryXComparator());
             set1.setValues(PID_PVValuesArrayList);
 
-            Collections.sort(PID_OutputValuesArrayList, new EntryXComparator());
+            PID_OutputValuesArrayList.sort(new EntryXComparator());
             set2.setValues(PID_OutputValuesArrayList);
 
             lineChart.getData().notifyDataChanged();
@@ -505,7 +518,6 @@ public class MainActivity extends AppCompatActivity {
 
             // create a dataset and give it a type
             set2 = new LineDataSet(PID_OutputValuesArrayList, "CV [PWM]");
-            CV_LineDataSet = set2;
             set2.setAxisDependency(YAxis.AxisDependency.RIGHT);
             set2.setColor(Color.RED);
             set2.setCircleColor(Color.RED);
