@@ -2,6 +2,8 @@ package com.example.avr_ballbalancerapp;
 
 import com.github.mikephil.charting.data.Entry;
 
+import java.util.ArrayList;
+
 public class clsBallControllerData {
 
     private float Ki, Kd, Kp; //Integral, Derivative and Proportional constants.
@@ -12,6 +14,10 @@ public class clsBallControllerData {
     double[] PV_RawOutPutArray;
     float[] PID_OutputArray;
     float[] PV_OutputArray;
+
+    //MPChart Declarations
+    private ArrayList<Entry> mpcPID_OutputValuesArrayList = new ArrayList<>();
+    private ArrayList<Entry> mpcPV_OutputValuesArrayList = new ArrayList<>();
 
     public void setPID_RawOutPutArray(double[] PID_RawOutPutArray) {
         this.PID_RawOutPutArray = PID_RawOutPutArray;
@@ -32,7 +38,7 @@ public class clsBallControllerData {
             float val = (float)myData[i];
             PID_OutputArray[i]=val;
             //PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
-
+            mpcPID_OutputValuesArrayList.add(new Entry(i, PID_OutputArray[i])); //Set1 - Calculated value
         }
 
 
@@ -50,7 +56,7 @@ public class clsBallControllerData {
             val2 = val2/1024*5; //Converts it to
             PV_val_dbl = sharp_get_mm_from_volt(val2);
             PV_OutputArray[i]=(float) PV_val_dbl;
-            //PID_PVValuesArrayList.add(new Entry(lastPlotInt, (float)PV_val_dbl1)); //Set1 - Calculated value
+            mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
 
 
         }
