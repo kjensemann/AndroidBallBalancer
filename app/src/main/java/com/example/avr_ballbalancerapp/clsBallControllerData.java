@@ -6,6 +6,19 @@ public class clsBallControllerData {
     private float KV_Arr[], PV_Arr[];
     private float SP; //SetPoint
     private String dataNameStr;
+    double[] PID_RawOutPutArray;
+    double[] PV_RawOutPutArray;
+
+    public void setPID_RawOutPutArray(double[] PID_RawOutPutArray) {
+        this.PID_RawOutPutArray = PID_RawOutPutArray;
+    }
+
+    public void setPV_RawOutPutArray(double[] PV_RawOutPutArray) {
+        this.PV_RawOutPutArray = PV_RawOutPutArray;
+    }
+
+
+
     /* --------------
      Class to hold data received from ESP8266 over WiFi and to make it plottable.
         - PV Data, CV data and SetPoint kept here
