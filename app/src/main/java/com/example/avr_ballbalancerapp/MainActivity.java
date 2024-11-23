@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     BallControllerDataObjectList.add(mBallControllerDataSelected);
                     mBallControllerDataSelected.setPID_RawOutPutArray(PID_OutPutArray);     //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
                     mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
-
+                    mBallControllerDataSelected.exportDataToFirebase(); //NB TEST ONLY - REMOVE!!
                     //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...
 
                     //------- OLD WAY TO PLOT DATA TO LINECHART - TO BE DELETED!!

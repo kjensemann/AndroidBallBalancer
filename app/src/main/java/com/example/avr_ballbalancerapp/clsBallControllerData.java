@@ -129,6 +129,13 @@ public class clsBallControllerData {
         return mpcLineData;
     }
 
+    public void exportDataToFirebase(){
+
+            mFbDbRef.child("PV_Values").setValue(PV_DataList);
+            mFbDbRef.child("PID_Values").setValue(PID_DataList);
+
+    }
+
     private double sharp_get_mm_from_volt(double adc_voltage_input)
     {
         //GP2Y0A41SK0F - SHARP SHORT DISTANCE SENSOR LINEARIZATION ROUTINES
