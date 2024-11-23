@@ -1,10 +1,8 @@
 package com.example.avr_ballbalancerapp;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +30,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -94,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
         mFbDbRef.child("Test2").setValue("HI There Test from AVR");
         mFbDbRef.child("Test").setValue("HI There TESTING2 Kristian: " + formattedDateTime);
+
+        mFbDbRef.child("balancerData").child("ConnectionIP").child("IP02").setValue("Hello - " + formattedDateTime);
+
 
         //VIEWS
         mTCP_MessageReceived = "No TCP Message Received";
@@ -247,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
                         lastPlotInt++;
 
                     }
+
 
                     //Adjusts x-axis view when new data comes in.
 

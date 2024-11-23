@@ -1,24 +1,59 @@
 package com.example.avr_ballbalancerapp;
 
+import android.graphics.Color;
+
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class clsBallControllerData {
+
+    /* --------------
+     Class to hold data received from ESP8266 over WiFi and to make it plottable.
+        - PV Data, CV data and SetPoint kept here
+        - Controller Parameters such as: Kd, Ki and Kp (derivative, integral and proportional)
+
+        - Data items are made which can be plotted with MPandroidChart library
+
+     ---------------- */
 
     private float Ki, Kd, Kp; //Integral, Derivative and Proportional constants.
     private float KV_Arr[], PV_Arr[];
     private float SP; //SetPoint
     private String dataNameStr;
-    double[] PID_RawOutPutArray;
-    double[] PV_RawOutPutArray;
-    float[] PID_OutputArray;
-    float[] PV_OutputArray;
+    private double[] PID_RawOutPutArray;
+    private double[] PV_RawOutPutArray;
+    private float[] PID_OutputArray;
+    private float[] PV_OutputArray;
+
+    //Firebase Data
+    private FirebaseDatabase mFbDb;
+    private DatabaseReference mFbDbRef;
+    private List<Float> PID_DataList;  //Used for sending data to firebase (arrays of data)
+    private List<Float> PV_DataList;   //Used for sending data to firebase (arrays of data)
 
     //MPChart Declarations
-    private ArrayList<Entry> mpcPID_OutputValuesArrayList = new ArrayList<>();
-    private ArrayList<Entry> mpcPV_OutputValuesArrayList = new ArrayList<>();
+    private LineData mpcLineData;
+    private LineDataSet mpcPID_LineDataSet; //This holds the "plottable data" including info on the plotting properties
+    private LineDataSet mpcPV_LineDataSet;
+    private ArrayList<Entry> mpcPID_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values
+    private ArrayList<Entry> mpcPV_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values.
 
+    //Class Constructors
+    public clsBallControllerData() {
+        mFbDb = FirebaseDatabase.getInstance();
+        mFbDbRef = mFbDb.getReference().child("balancerData");
+
+    }
+
+    //
     public void setPID_RawOutPutArray(double[] PID_RawOutPutArray) {
         this.PID_RawOutPutArray = PID_RawOutPutArray;
         setPID_OutPutArray(PID_RawOutPutArray);
@@ -37,10 +72,21 @@ public class clsBallControllerData {
         for (int i = 0; i < dataLength; i++) {
             float val = (float)myData[i];
             PID_OutputArray[i]=val;
+            PID_DataList.add(val); //For export to firebase
             //PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
             mpcPID_OutputValuesArrayList.add(new Entry(i, PID_OutputArray[i])); //Set1 - Calculated value
         }
-
+        //Create Plottable DataSet - MPChart
+        mpcPID_LineDataSet = new LineDataSet(mpcPID_OutputValuesArrayList, "CV [PWM]");
+        mpcPID_LineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        mpcPID_LineDataSet.setColor(ColorTemplate.getHoloBlue());
+        mpcPID_LineDataSet.setCircleColor(ColorTemplate.getHoloBlue());
+        mpcPID_LineDataSet.setLineWidth(2f);
+        mpcPID_LineDataSet.enableDashedLine(0f,2f,0f);
+        mpcPID_LineDataSet.setCircleRadius(3f);
+        mpcPID_LineDataSet.setFillAlpha(65);
+        mpcPID_LineDataSet.setFillColor(ColorTemplate.getHoloBlue());
+        mpcPID_LineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
 
     }
 
@@ -56,22 +102,32 @@ public class clsBallControllerData {
             val2 = val2/1024*5; //Converts it to
             PV_val_dbl = sharp_get_mm_from_volt(val2);
             PV_OutputArray[i]=(float) PV_val_dbl;
+            PV_DataList.add(PV_OutputArray[i]); //For export to firebase
             mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
 
 
         }
-
-
+        //CREATE PLOTTABLE DATASET - MPChart
+        mpcPV_LineDataSet = new LineDataSet(mpcPV_OutputValuesArrayList,"PV [mm]");
+        mpcPV_LineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        mpcPV_LineDataSet.setColor(Color.RED);
+        mpcPV_LineDataSet.setCircleColor(Color.RED);
+        mpcPV_LineDataSet.setLineWidth(2f);
+        mpcPV_LineDataSet.enableDashedLine(0f,2f,0f);
+        mpcPV_LineDataSet.setCircleRadius(3f);
+        mpcPV_LineDataSet.setFillAlpha(65);
+        mpcPV_LineDataSet.setFillColor(Color.RED);
+        mpcPV_LineDataSet.setDrawCircleHole(true);
+        mpcPV_LineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
     }
 
-    /* --------------
-     Class to hold data received from ESP8266 over WiFi and to make it plottable.
-        - PV Data, CV data and SetPoint kept here
-        - Controller Parameters such as: Kd, Ki and Kp (derivative, integral and proportional)
+    public LineData getMPCLineData() {
 
-        - Data items are made which can be plotted with MPandroidChart library
 
-     ---------------- */
+        mpcLineData = new LineData(mpcPID_LineDataSet, mpcPV_LineDataSet);
+
+        return mpcLineData;
+    }
 
     private double sharp_get_mm_from_volt(double adc_voltage_input)
     {
