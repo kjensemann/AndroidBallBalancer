@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onServerBytesReceived(byte[] bytes) {
 
-                if (bytes.length >= dataLengthInt-1) //From Controller --> To plot behaviour of controller
+                if (bytes.length >= 50)// dataLengthInt-1) //From Controller --> To plot behaviour of controller
                 {
 
                     //StringToByteArray
