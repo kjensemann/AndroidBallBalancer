@@ -185,40 +185,40 @@ public class ballBalancerCtrlView extends View {
         canvas_width = w;
 
         //Kp, Ki and Kd Rects
-        mKp_Rect.left = 100;
+        mKp_Rect.left = 60;
         mKp_Rect.top = canvas_height/10 * 1;
-        mKp_Rect.right= mKp_Rect.left+canvas_width/4;
+        mKp_Rect.right= mKp_Rect.left+canvas_width/6;
         mKp_Rect.bottom = mKp_Rect.top+canvas_height/5;
 
         mKi_Rect.left = mKp_Rect.left + canvas_width/10 * 0;//3;
         mKi_Rect.top = canvas_height/10 * 4;
-        mKi_Rect.right= mKi_Rect.left+canvas_width/4;
+        mKi_Rect.right= mKp_Rect.right;
         mKi_Rect.bottom = mKi_Rect.top+canvas_height/5;
 
         mKd_Rect.left = mKp_Rect.left + canvas_width/10 * 0;
         mKd_Rect.top = canvas_height/10 * 7;
-        mKd_Rect.right= mKd_Rect.left+canvas_width/4;
+        mKd_Rect.right= mKp_Rect.right;
         mKd_Rect.bottom = mKd_Rect.top+canvas_height/5;
 
-        mMoveUp_Rect.left = canvas_width - canvas_width/5;
+        mMoveUp_Rect.left = canvas_width - canvas_width/8;
         mMoveUp_Rect.right = mMoveUp_Rect.left + canvas_height/2;
         mMoveUp_Rect.top = 10;
         mMoveUp_Rect.bottom = mMoveUp_Rect.top + canvas_height/2;
         mMoveUp_Drawable.setBounds(mMoveUp_Rect);
 
-        mMoveDown_Rect.left = canvas_width - canvas_width/5;
+        mMoveDown_Rect.left = canvas_width - canvas_width/8;
         mMoveDown_Rect.right = mMoveDown_Rect.left + canvas_height/2;
         mMoveDown_Rect.top = mMoveUp_Rect.top+ canvas_height/2;
         mMoveDown_Rect.bottom = mMoveDown_Rect.top + canvas_height/2;
         mMoveDown_Drawable.setBounds(mMoveDown_Rect);
 
-        mServoPosMax_Rect.left = mMoveUp_Rect.left - canvas_width/10;
+        mServoPosMax_Rect.left = mMoveUp_Rect.left - canvas_width/14;
         mServoPosMax_Rect.right = mServoPosMax_Rect.left + canvas_height / 3;
         mServoPosMax_Rect.top = mMoveUp_Rect.top;
         mServoPosMax_Rect.bottom = mServoPosMax_Rect.top + canvas_height / 3;
         mServoposMax_Drawable.setBounds(mServoPosMax_Rect);
 
-        mServoPosMin_Rect.left = mMoveDown_Rect.left - canvas_width/10;
+        mServoPosMin_Rect.left = mMoveDown_Rect.left - canvas_width/14;
         mServoPosMin_Rect.right = mServoPosMin_Rect.left + canvas_height / 3;
         mServoPosMin_Rect.bottom = mMoveDown_Rect.bottom;
         mServoPosMin_Rect.top = mMoveDown_Rect.bottom- canvas_height / 3;
@@ -231,9 +231,9 @@ public class ballBalancerCtrlView extends View {
         mServoposMid_Drawable.setBounds(mServoPosMid_Rect);
 
         mStartCtrl_Rect.left = mKp_Rect.right + 0;
-        mStartCtrl_Rect.right = mStartCtrl_Rect.left + (int)(canvas_height*0.6);
+        mStartCtrl_Rect.right = mStartCtrl_Rect.left + (int)(canvas_height*0.5);
         mStartCtrl_Rect.top = canvas_height/10;
-        mStartCtrl_Rect.bottom = mStartCtrl_Rect.top + (int)(canvas_height*0.6);
+        mStartCtrl_Rect.bottom = mStartCtrl_Rect.top + (int)(canvas_height*0.5);
         mStartCtrl_Drawable.setBounds(mStartCtrl_Rect);
 
         //Function Drawable
