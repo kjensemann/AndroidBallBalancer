@@ -36,8 +36,8 @@ public class clsBallControllerData {
     //Firebase Data
     private FirebaseDatabase mFbDb;
     private DatabaseReference mFbDbRef;
-    private List<Float> PID_DataList;  //Used for sending data to firebase (arrays of data)
-    private List<Float> PV_DataList;   //Used for sending data to firebase (arrays of data)
+    private List<Float> PID_DataList = new ArrayList<>();  //Used for sending data to firebase (arrays of data)
+    private List<Float> PV_DataList = new ArrayList<>();   //Used for sending data to firebase (arrays of data)
 
     //MPChart Declarations
     private LineData mpcLineData;
@@ -50,7 +50,8 @@ public class clsBallControllerData {
     public clsBallControllerData() {
         mFbDb = FirebaseDatabase.getInstance();
         mFbDbRef = mFbDb.getReference().child("balancerData");
-
+        mpcPID_OutputValuesArrayList = new ArrayList<>();
+        mpcPV_OutputValuesArrayList = new ArrayList<>();
     }
 
     //

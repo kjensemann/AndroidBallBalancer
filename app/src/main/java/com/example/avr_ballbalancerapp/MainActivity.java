@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private YAxis yRightAxis;
     Description chartDescription;
 
-    private int dataLengthInt = 2000; //Size of incoming data array (e.g 1000 bytes)
+    private int dataLengthInt = 400;//2000; //Size of incoming data array (e.g 1000 bytes)
     private int lastPlotInt = 0; //I.e. is incremented each time new data arrives
     private int newSetpoint = 130; //Start-Condition, same as AVR.
     private IDataSet<Entry> iDataSet;
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onServerBytesReceived(byte[] bytes) {
 
-                if (bytes.length >= 50)// dataLengthInt-1) //From Controller --> To plot behaviour of controller
+                if (bytes.length >= dataLengthInt-1) //From Controller --> To plot behaviour of controller
                 {
 
                     //StringToByteArray
@@ -481,10 +481,10 @@ public class MainActivity extends AppCompatActivity {
     private void setData(int count, float range) {
 
         //Adjusting X-Axis for incoming data
-        if (xAxis.getAxisMaximum() < (float)lastPlotInt){
-            xAxis.setAxisMinimum(xAxis.getAxisMaximum()-(float)dataLengthInt/4);
-            xAxis.setAxisMaximum(xAxis.getAxisMaximum() + (float)dataLengthInt/4);
-        }
+
+            xAxis.setAxisMinimum(0);
+            xAxis.setAxisMaximum((float)dataLengthInt/4);
+
 
         if (lineChart.getData() != null && lineChart.getData().getDataSetCount() > 0) {
             set1 = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
@@ -540,7 +540,10 @@ public class MainActivity extends AppCompatActivity {
             data.setValueTextSize(9f);
 
             // set data
-            lineChart.setData(data);
+
+            //lineChart.setData(data);
+            lineChart.setData(mBallControllerDataSelected.getMPCLineData());
+            lineChart.invalidate();
         }
     }
 
