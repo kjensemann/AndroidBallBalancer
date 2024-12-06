@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -19,6 +20,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
@@ -45,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mFbDbRef;
 
     //MPandroidChart
-    private LineChart lineChart;
+    private ScatterChart scatterChart;
     private XAxis xAxis;
     private YAxis yLeftAxis;
     private YAxis yRightAxis;
@@ -55,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private int lastPlotInt = 0; //I.e. is incremented each time new data arrives
     private int newSetpoint = 130; //Start-Condition, same as AVR.
     private IDataSet<Entry> iDataSet;
-    private LineDataSet PV_LineDataSet; //Process Variable (e.g. mm distance)
-    private LineDataSet CV_LineDataSet; //Control Variable
-    private LineDataSet set1, set2;
+    private ScatterDataSet PV_LineDataSet; //Process Variable (e.g. mm distance)
+    private ScatterDataSet CV_LineDataSet; //Control Variable
+    private ScatterDataSet set1, set2;
 
     private SeekBar setPointSeekBar;
     private TextView tvSetPoint;
@@ -122,55 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 else if (msg.contains("ACQ_DISTANCE")){
 
                 }
-                else if (msg.length() == 40) //Test
-                {
 
-                    //StringToByteArray
-                    byte[] byteArr = msg.getBytes();
-                    double[] ansDbl = new double[20];
-                    int k = 0;
-
-                    for (int i = 0; i < 40; i = i+2)
-                    {
-                        char short1,short2, ans;
-                        short1 = 0x0000;
-                        short2 = 0x0000;
-                        short1 = (char)((byteArr[i] & 0xFF) << 8); //Left shifts byte by 8 bits into short variable
-                        short2 = (char)(byteArr[i+1] & 0xFF);
-                        ans = (char)(short1 | short2); //adjoins short1 and short2 into final variable
-
-                        ansDbl[k]= (double)ans;
-                        k++;
-                    }
-
-
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.TCPview),"Msg Length: " + String.valueOf(msg.length()) + " Received",Snackbar.LENGTH_LONG);
-                    snackbar.show();
-
-                    double[] PID_OutPutArray = new double[10];
-                    double[] PID_PV_Array = new double[10];
-                    k=0;
-                    for (int i = 0; i < 20; i = i+2)
-                    {
-
-                        PID_OutPutArray[k] = ansDbl[i]*(lastPlotInt+1);
-                        PID_PV_Array[k]    = ansDbl[i+1]*(lastPlotInt+2);
-                        //Get PID OutPut Values - Servo Pos
-                        //Get PID PV Values - Distance
-                        PID_PVValuesArrayList.add(new Entry(lastPlotInt, (float)PID_OutPutArray[k])); //Set1 - Calculated value
-                        PID_OutputValuesArrayList.add(new Entry(lastPlotInt, (float)PID_PV_Array[k])); //Set1 - Calculated value
-                        k++;
-                        lastPlotInt++;
-                    }
-                    //Get PID OutPut Values - Servo Pos
-                    //Get PID PV Values - Distance
-
-
-                    setData(100, 100);
-                    lineChart.invalidate();
-
-
-                }
                 Snackbar snackbar2 = Snackbar.make(findViewById(R.id.TCPview),"Msg Length: " + String.valueOf(msg.length()) + " Received",Snackbar.LENGTH_LONG);
                 snackbar2.show();
 
@@ -248,12 +203,19 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
+                    //Adjust y-axes
+                    scatterChart.getAxisLeft().setAxisMaximum(mBallControllerDataSelected.getMpcPV_ScatterDataSet().getYMax()*1.2f);
+                    scatterChart.getAxisLeft().setAxisMinimum(0);
+                    scatterChart.getAxisRight().setAxisMaximum(mBallControllerDataSelected.getMpcPID_ScatterDataSet().getYMax()*1.2f);
+                    scatterChart.getAxisRight().setAxisMinimum(0);
 
                     //Adjusts x-axis view when new data comes in.
+                    scatterChart.setData(mBallControllerDataSelected.getMPCLineData());
+                    scatterChart.getScatterData().notifyDataChanged();
+                    scatterChart.notifyDataSetChanged();
+                    scatterChart.animateXY(500,500);
+                    scatterChart.invalidate();
 
-                    setData(100, 100);
-
-                    lineChart.invalidate();
                     //------- END OLD WAY TO PLOT DATA -----------
                 }
             }
@@ -267,62 +229,62 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //MP_lineChart
-        lineChart = (LineChart)findViewById(R.id.mpChart);
+        scatterChart = (ScatterChart)findViewById(R.id.mpChart);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(this, R.layout.layout_custom_marker_view);
-        lineChart.setMarker(customMarkerView); //Responsible to show value of selected point (see class - CustomMarkerView)
+        scatterChart.setMarker(customMarkerView); //Responsible to show value of selected point (see class - CustomMarkerView)
 
 
         //lineChart.setBackgroundColor();
         //lineChart.getDescription().setEnabled(false);
 
         //Linechart - X-axis description
-        lineChart.getDescription().setEnabled(true);
-        chartDescription = lineChart.getDescription();
+        scatterChart.getDescription().setEnabled(true);
+        chartDescription = scatterChart.getDescription();
         chartDescription.setText("20ms Intervals");
         chartDescription.setTextSize(10f);
         chartDescription.setXOffset(20);
         chartDescription.setYOffset(5);
 
-        lineChart.getXAxis().setEnabled(true);
-        xAxis = lineChart.getXAxis();
+        scatterChart.getXAxis().setEnabled(true);
+        xAxis = scatterChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setAxisMaximum((float)dataLengthInt/4);
         xAxis.setAxisMinimum(0f);
         xAxis.enableGridDashedLine(0f, 10f, 0f); //LineLength 0f = no line
 
 
-        lineChart.getAxisLeft().setEnabled(true); //SET1 - PV_Values
-        yLeftAxis = lineChart.getAxisLeft();
-        yLeftAxis.setAxisMaximum(310f); //310 mm MAX
-        yLeftAxis.setAxisMinimum(25f);  // 25 mm MIN
+        scatterChart.getAxisLeft().setEnabled(true); //SET1 - PV_Values
+        yLeftAxis = scatterChart.getAxisLeft();
+        yLeftAxis.setAxisMaximum(1000f); //310 mm MAX
+        yLeftAxis.setAxisMinimum(0f);  // 25 mm MIN
         yLeftAxis.enableGridDashedLine(0f,5f, 0f); //LineLength 0f = no line (only dots)
-        yLeftAxis.setTextColor(ColorTemplate.getHoloBlue());
+        yLeftAxis.setTextColor(Color.RED);
 
-        lineChart.getAxisRight().setEnabled(true); //SET2 - Output_Values
-        yRightAxis = lineChart.getAxisRight();
-        yRightAxis.setAxisMaximum(2500f);
-        yRightAxis.setAxisMinimum(500f);
+        scatterChart.getAxisRight().setEnabled(true); //SET2 - Output_Values
+        yRightAxis = scatterChart.getAxisRight();
+        yRightAxis.setAxisMaximum(1500f);
+        yRightAxis.setAxisMinimum(0f);
         yRightAxis.enableGridDashedLine(5f,7f, 0f);
-        yRightAxis.setTextColor(Color.RED);
+        yRightAxis.setTextColor(ColorTemplate.getHoloBlue());
 
-        lineChart.setTouchEnabled(true);
+        scatterChart.setTouchEnabled(true);
 
-        //lineChart.setDragEnabled(true);
-        lineChart.setDragDecelerationEnabled(true);
-        lineChart.setDragDecelerationFrictionCoef(0.9f);
+        //scatterChart.setDragEnabled(true);
+        scatterChart.setDragDecelerationEnabled(true);
+        scatterChart.setDragDecelerationFrictionCoef(0.9f);
 
-        lineChart.setScaleEnabled(true);
-        lineChart.setScaleXEnabled(true);
-        lineChart.setScaleYEnabled(false);
-        lineChart.setDrawGridBackground(false);
-        lineChart.setHighlightPerDragEnabled(true);
+        scatterChart.setScaleEnabled(true);
+        scatterChart.setScaleXEnabled(true);
+        scatterChart.setScaleYEnabled(false);
+        scatterChart.setDrawGridBackground(false);
+        scatterChart.setHighlightPerDragEnabled(true);
 
         // if disabled, scaling can be done on x- and y-axis separately
-        lineChart.setPinchZoom(true);
-        lineChart.animateX(1500);
+        scatterChart.setPinchZoom(true);
+        scatterChart.animateX(1500);
 
-        Legend l = lineChart.getLegend();
+        Legend l = scatterChart.getLegend();
         // modify the legend ...
         l.setForm(Legend.LegendForm.LINE);
         l.setTypeface(Typeface.DEFAULT);
@@ -337,9 +299,10 @@ public class MainActivity extends AppCompatActivity {
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(true);
 
-        lineChart.invalidate();
+        scatterChart.notifyDataSetChanged();
+        scatterChart.invalidate();
 
-        lineChart.setOnChartGestureListener(new OnChartGestureListener() {
+        scatterChart.setOnChartGestureListener(new OnChartGestureListener() {
             @Override
             public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
 
@@ -352,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChartLongPressed(MotionEvent me) {
-                Snackbar.make(lineChart, "Aqcuire Data?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
+                Snackbar.make(scatterChart, "Aqcuire Data?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         clsKrisMath krisMath = new clsKrisMath();
@@ -379,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
 
                         double[] ans = krisMath.khjCubicSplineEngDetails(x_val,x_vect,y_vect); //computes estimated value at given X.
 
-                        Toast.makeText(lineChart.getContext(), "x_val: " + String.valueOf(x_val) + " has y-val: " + String.format("%.3f",ans[0]) + " found in: " + String.format("%.0f",ans[1]) + " iterations", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(scatterChart.getContext(), "x_val: " + String.valueOf(x_val) + " has y-val: " + String.format("%.3f",ans[0]) + " found in: " + String.format("%.0f",ans[1]) + " iterations", Toast.LENGTH_SHORT).show();
 
 
                     }
@@ -390,14 +353,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChartDoubleTapped(MotionEvent me) {
 
-                Snackbar.make(lineChart, "Extend X-axis to 0?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
+                Snackbar.make(scatterChart, "Extend X-axis to 0?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         xAxis.setAxisMinimum(0); //Ensures we can see the entire plot
-                        lineChart.invalidate();
-                        lineChart.setScaleMinima(0f, 0f);
-                        lineChart.fitScreen();
-                        lineChart.invalidate();
+                        scatterChart.invalidate();
+                        scatterChart.setScaleMinima(0f, 0f);
+                        scatterChart.fitScreen();
+                        scatterChart.invalidate();
                     }
                 }).show();
 
@@ -424,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //End LineChart
+        //End scatterChart
 
         //SeekBar
         setPointSeekBar = (SeekBar) findViewById(R.id.seekBar_setPoint);
@@ -476,75 +439,7 @@ public class MainActivity extends AppCompatActivity {
     private void UpdateSetpointOnGraph(double newSetpoint)
     {
 
-    }
 
-    private void setData(int count, float range) {
-
-        //Adjusting X-Axis for incoming data
-
-            xAxis.setAxisMinimum(0);
-            xAxis.setAxisMaximum((float)dataLengthInt/4);
-
-
-        if (lineChart.getData() != null && lineChart.getData().getDataSetCount() > 0) {
-            set1 = (LineDataSet) lineChart.getData().getDataSetByIndex(0);
-            set2 = (LineDataSet) lineChart.getData().getDataSetByIndex(1);
-
-            PID_PVValuesArrayList.sort(new EntryXComparator());
-            set1.setValues(PID_PVValuesArrayList);
-
-            PID_OutputValuesArrayList.sort(new EntryXComparator());
-            set2.setValues(PID_OutputValuesArrayList);
-
-            lineChart.getData().notifyDataChanged();
-            lineChart.notifyDataSetChanged();
-         } else {
-            // create a dataset and give it a type.
-            set1 = new LineDataSet(PID_PVValuesArrayList, "PROCESS VARIABLE"); //BLUE
-            PV_LineDataSet = set1;
-            set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-            set1.setColor(ColorTemplate.getHoloBlue());
-            set1.setCircleColor(ColorTemplate.getHoloBlue());
-            set1.setLineWidth(2f);
-            set1.enableDashedLine(0f,2f,0f);
-            set1.setCircleRadius(3f);
-            set1.setFillAlpha(65);
-            set1.setFillColor(ColorTemplate.getHoloBlue());
-            set1.setHighLightColor(Color.rgb(244, 117, 117));
-            set1.setDrawCircleHole(true);
-            //set1.setFillFormatter(new MyFillFormatter(0f));
-            //set1.setDrawHorizontalHighlightIndicator(false);
-            //set1.setVisible(false);
-            //set1.setCircleHoleColor(Color.WHITE);
-
-            // create a dataset and give it a type
-            set2 = new LineDataSet(PID_OutputValuesArrayList, "CV [PWM]");
-            set2.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            set2.setColor(Color.RED);
-            set2.setCircleColor(Color.RED);
-            set2.setLineWidth(2f);
-            set2.enableDashedLine(0f,2f,0f);
-            set2.setCircleRadius(3f);
-            set2.setFillAlpha(65);
-            set2.setFillColor(Color.RED);
-            set2.setDrawCircleHole(true);
-            set2.setHighLightColor(Color.rgb(244, 117, 117));
-            //set2.setFillFormatter(new MyFillFormatter(900f));
-
-
-
-            // create a data object with the data sets
-            LineData data = new LineData(set1, set2);//,SP_LineDataSet);
-
-            data.setValueTextColor(Color.WHITE);
-            data.setValueTextSize(9f);
-
-            // set data
-
-            //lineChart.setData(data);
-            lineChart.setData(mBallControllerDataSelected.getMPCLineData());
-            lineChart.invalidate();
-        }
     }
 
 

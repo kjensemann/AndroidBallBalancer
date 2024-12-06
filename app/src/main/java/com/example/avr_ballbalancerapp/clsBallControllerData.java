@@ -2,11 +2,15 @@ package com.example.avr_ballbalancerapp;
 
 import android.graphics.Color;
 
+import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.EntryXComparator;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -40,9 +44,9 @@ public class clsBallControllerData {
     private List<Float> PV_DataList = new ArrayList<>();   //Used for sending data to firebase (arrays of data)
 
     //MPChart Declarations
-    private LineData mpcLineData;
-    private LineDataSet mpcPID_LineDataSet; //This holds the "plottable data" including info on the plotting properties
-    private LineDataSet mpcPV_LineDataSet;
+    private ScatterData mpcScatterData;
+    private ScatterDataSet mpcPID_ScatterDataSet; //This holds the "plottable data" including info on the plotting properties
+    private ScatterDataSet mpcPV_ScatterDataSet;
     private ArrayList<Entry> mpcPID_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values
     private ArrayList<Entry> mpcPV_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values.
 
@@ -50,6 +54,7 @@ public class clsBallControllerData {
     public clsBallControllerData() {
         mFbDb = FirebaseDatabase.getInstance();
         mFbDbRef = mFbDb.getReference().child("balancerData");
+
         mpcPID_OutputValuesArrayList = new ArrayList<>();
         mpcPV_OutputValuesArrayList = new ArrayList<>();
     }
@@ -77,18 +82,24 @@ public class clsBallControllerData {
             //PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
             mpcPID_OutputValuesArrayList.add(new Entry(i, PID_OutputArray[i])); //Set1 - Calculated value
         }
+        //mpcPID_OutputValuesArrayList.sort(new EntryXComparator());
         //Create Plottable DataSet - MPChart
-        mpcPID_LineDataSet = new LineDataSet(mpcPID_OutputValuesArrayList, "CV [PWM]");
-        mpcPID_LineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-        mpcPID_LineDataSet.setColor(ColorTemplate.getHoloBlue());
-        mpcPID_LineDataSet.setCircleColor(ColorTemplate.getHoloBlue());
-        mpcPID_LineDataSet.setLineWidth(2f);
-        mpcPID_LineDataSet.enableDashedLine(0f,2f,0f);
-        mpcPID_LineDataSet.setCircleRadius(3f);
-        mpcPID_LineDataSet.setFillAlpha(65);
-        mpcPID_LineDataSet.setFillColor(ColorTemplate.getHoloBlue());
-        mpcPID_LineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcPID_ScatterDataSet = new ScatterDataSet(mpcPID_OutputValuesArrayList, "CV [PWM]");
+        mpcPID_ScatterDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        mpcPID_ScatterDataSet.setColor(ColorTemplate.getHoloBlue());
+        mpcPID_ScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcPID_ScatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        mpcPID_ScatterDataSet.setScatterShapeHoleRadius(2f);
+        mpcPID_ScatterDataSet.setScatterShapeSize(3f);
+        mpcPID_ScatterDataSet.setDrawValues(false);
 
+    }
+
+    public ScatterDataSet getMpcPID_ScatterDataSet() {
+        return mpcPID_ScatterDataSet;
+    }
+    public ScatterDataSet getMpcPV_ScatterDataSet() {
+        return mpcPV_ScatterDataSet;
     }
 
     private void setPV_OutPutArray(double[] myData){
@@ -109,25 +120,28 @@ public class clsBallControllerData {
 
         }
         //CREATE PLOTTABLE DATASET - MPChart
-        mpcPV_LineDataSet = new LineDataSet(mpcPV_OutputValuesArrayList,"PV [mm]");
-        mpcPV_LineDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
-        mpcPV_LineDataSet.setColor(Color.RED);
-        mpcPV_LineDataSet.setCircleColor(Color.RED);
-        mpcPV_LineDataSet.setLineWidth(2f);
-        mpcPV_LineDataSet.enableDashedLine(0f,2f,0f);
-        mpcPV_LineDataSet.setCircleRadius(3f);
-        mpcPV_LineDataSet.setFillAlpha(65);
-        mpcPV_LineDataSet.setFillColor(Color.RED);
-        mpcPV_LineDataSet.setDrawCircleHole(true);
-        mpcPV_LineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        //mpcPV_OutputValuesArrayList.sort(new EntryXComparator());
+        mpcPV_ScatterDataSet = new ScatterDataSet(mpcPV_OutputValuesArrayList,"PV [mm]");
+        mpcPV_ScatterDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        mpcPV_ScatterDataSet.setColor(Color.RED);
+        mpcPV_ScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcPV_ScatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        mpcPV_ScatterDataSet.setScatterShapeHoleRadius(2f);
+        mpcPV_ScatterDataSet.setScatterShapeSize(3f);
+        mpcPV_ScatterDataSet.setDrawValues(false);
+
+
     }
 
-    public LineData getMPCLineData() {
+    public ScatterData getMPCLineData() {
 
 
-        mpcLineData = new LineData(mpcPID_LineDataSet, mpcPV_LineDataSet);
+        mpcScatterData = new ScatterData(mpcPV_ScatterDataSet,mpcPID_ScatterDataSet);
+        mpcScatterData.setValueTextColor(Color.WHITE);
+        mpcScatterData.setValueTextSize(9f);
+        mpcScatterData.notifyDataChanged();
 
-        return mpcLineData;
+        return mpcScatterData;
     }
 
     public void exportDataToFirebase(){

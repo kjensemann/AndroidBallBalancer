@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.github.mikephil.charting.charts.LineChart
+    <com.github.mikephil.charting.charts.ScatterChart
         android:id="@+id/mpChart"
         android:layout_width="match_parent"
         android:layout_height="400dp"
