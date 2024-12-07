@@ -143,6 +143,19 @@ public class ballBalancerCtrlView extends View {
         mAnimThread.start();
     }
 
+    public double getKi_val() {
+        return mKi_val;
+    }
+
+    public double getKp_val() {
+        return mKp_val;
+    }
+
+    public double getKd_val() {
+        return mKd_val;
+    }
+
+    //Draw methods
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -177,6 +190,8 @@ public class ballBalancerCtrlView extends View {
         mServoposMid_Drawable.draw(canvas);
 
     }
+
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -283,7 +298,7 @@ public class ballBalancerCtrlView extends View {
                     // Set up the input
                     final EditText input = new EditText(mContext);
                     // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                    input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     input.setText("1.3"); //Include Code to select from list
                     builder.setView(input);
 
@@ -295,7 +310,6 @@ public class ballBalancerCtrlView extends View {
                             mKp_val = Double.parseDouble(mKp_val_str);
 
                             mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SET_Kp_" + mKp_val_str + "_SET_Kp"); // Triggers event
-
                             //mTCPviewEventListenerInterface.onMessageSentToServer(mTCP_SendString); //Triggers event, notifies outside listeners that message has been sent to server (e.g. command sent to ESP8266)
 
                             invalidate();
@@ -333,7 +347,7 @@ public class ballBalancerCtrlView extends View {
                     // Set up the input
                     final EditText input = new EditText(mContext);
                     // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                    input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     input.setText("0.1"); //Include Code to select from list
                     builder.setView(input);
 
@@ -345,7 +359,6 @@ public class ballBalancerCtrlView extends View {
                             mKi_val = Double.parseDouble(mKi_val_str);
 
                             mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SET_Ki_" + mKi_val_str + "_SET_Ki"); // Triggers event
-
 
                             invalidate();
                         }
@@ -383,7 +396,7 @@ public class ballBalancerCtrlView extends View {
                     // Set up the input
                     final EditText input = new EditText(mContext);
                     // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                    input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
                     input.setText("0.7"); //Include Code to select from list
                     builder.setView(input);
 
@@ -482,8 +495,8 @@ public class ballBalancerCtrlView extends View {
     public interface BallBalancerCtrlViewEventListenerInterface {
         public void onSendMessageToTCP_Server(String msg); //Event raised for outside listeners when android app sends message to server (e.g. to ESP8266) (Eg. change in setpoint, Kp, Ki etc
 
-
     }
+
     // END INTERFACE ------------------------------------------
 
     //ANIMATION THREADS, HANDLERS AND RUNNABLES
@@ -568,6 +581,9 @@ public class ballBalancerCtrlView extends View {
 
 
         }
+
+
     }
 
 }
+

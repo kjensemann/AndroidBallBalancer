@@ -28,14 +28,19 @@ public class clsBallControllerData {
 
      ---------------- */
 
-    private float Ki, Kd, Kp; //Integral, Derivative and Proportional constants.
-    private float KV_Arr[], PV_Arr[];
-    private float SP; //SetPoint
+    private float PID_Kp;
+    private float PID_Ki;
+    private float PID_Kd; //Integral, Derivative and Proportional constants.
+    private float PID_SetPoint; //SetPoint
+
     private String dataNameStr;
     private double[] PID_RawOutPutArray;
     private double[] PV_RawOutPutArray;
     private float[] PID_OutputArray;
     private float[] PV_OutputArray;
+
+    private float PV_SetPoint;
+
 
     //Firebase Data
     private FirebaseDatabase mFbDb;
@@ -59,7 +64,37 @@ public class clsBallControllerData {
         mpcPV_OutputValuesArrayList = new ArrayList<>();
     }
 
-    //
+    //Class Fields
+
+    public float getPID_SetPoint() {
+        return PID_SetPoint;
+    }
+
+    public void setPID_SetPoint(float PID_SetPoint) {
+        this.PID_SetPoint = PID_SetPoint;
+    }
+
+    public float getPID_Kp() {
+        return PID_Kp;
+    }
+    public void setPID_Kp(float PID_Kp) {
+        this.PID_Kp = PID_Kp;
+    }
+
+    public float getPID_Ki() {
+        return PID_Ki;
+    }
+    public void setPID_Ki(float PID_Ki) {
+        this.PID_Ki = PID_Ki;
+    }
+
+    public float getPID_Kd() {
+        return PID_Kd;
+    }
+    public void setPID_Kd(float PID_Kd) {
+        this.PID_Kd = PID_Kd;
+    }
+
     public void setPID_RawOutPutArray(double[] PID_RawOutPutArray) {
         this.PID_RawOutPutArray = PID_RawOutPutArray;
         setPID_OutPutArray(PID_RawOutPutArray);

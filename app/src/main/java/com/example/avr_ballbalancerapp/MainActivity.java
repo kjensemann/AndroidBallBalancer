@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Entry> PID_OutputValuesArrayList = new ArrayList<>();
     private ArrayList<Entry>  PID_PVValuesArrayList = new ArrayList<>();
 
+    private float mPID_Kp_MCU, mPID_Ki_MCU, mPID_Kd_MCU;
+
     //clsBallControllerDataObjects - Which are stored and can be plotted
     private clsBallControllerData mBallControllerDataSelected;
     private List<clsBallControllerData> BallControllerDataObjectList = new ArrayList<>();
@@ -83,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-
 
         //FIREBASE
         mFbDb = FirebaseDatabase.getInstance();
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSendMessageToTCP_Server(String msg) {
                 mTCPview.sendTCP_StringToServer(msg); //Sends string to TCP server, e.g. "SET_Kp_0.2_Set_Kp"
             }
+
         });
 
         //TCP_View
@@ -124,6 +126,16 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if (msg.contains("ACQ_DISTANCE")){
 
+                }
+                else if (msg.contains("Kp")){
+                    //Code to set Kp, so that we can store the value
+
+                }
+                else if (msg.contains("Kd")){
+                    //Code to set Kp, so that we can store the value
+                }
+                else if (msg.contains("Ki")){
+                    //Code to set Kp, so that we can store the value
                 }
 
                 Snackbar snackbar2 = Snackbar.make(findViewById(R.id.TCPview),"Msg Length: " + String.valueOf(msg.length()) + " Received",Snackbar.LENGTH_LONG);
@@ -182,6 +194,11 @@ public class MainActivity extends AppCompatActivity {
                     BallControllerDataObjectList.add(mBallControllerDataSelected);
                     mBallControllerDataSelected.setPID_RawOutPutArray(PID_OutPutArray);     //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
                     mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
+                    mBallControllerDataSelected.setPID_Kp((float)mBalancerCtrlView.getKp_val());
+                    mBallControllerDataSelected.setPID_Ki((float)mBalancerCtrlView.getKi_val());
+                    mBallControllerDataSelected.setPID_Kd((float)mBalancerCtrlView.getKd_val());
+                    mBallControllerDataSelected.setPID_SetPoint((float)newSetpoint);
+
                     mBallControllerDataSelected.exportDataToFirebase(); //NB TEST ONLY - REMOVE!!
                     //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...
 
