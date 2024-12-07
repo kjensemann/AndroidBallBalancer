@@ -14,6 +14,7 @@ import com.github.mikephil.charting.utils.EntryXComparator;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +29,12 @@ public class clsBallControllerData {
 
      ---------------- */
 
-    private float PID_Kp;
-    private float PID_Ki;
-    private float PID_Kd; //Integral, Derivative and Proportional constants.
-    private float PID_SetPoint; //SetPoint
+    private double PID_Kp;
+    private double PID_Ki;
+    private double PID_Kd; //Integral, Derivative and Proportional constants.
+    private double PID_SetPoint; //SetPoint
+    private Duration durationOfDataCollection;
+    private double durationOfDataCollectionInSeconds;
 
     private String dataNameStr;
     private double[] PID_RawOutPutArray;
@@ -65,34 +68,44 @@ public class clsBallControllerData {
 
     //Class Fields
 
-    public float getPID_SetPoint() {
+    public double getPID_SetPoint() {
         return PID_SetPoint;
     }
 
-    public void setPID_SetPoint(float PID_SetPoint) {
+    public void setPID_SetPoint(double PID_SetPoint) {
         this.PID_SetPoint = PID_SetPoint;
     }
 
-    public float getPID_Kp() {
+    public double getPID_Kp() {
         return PID_Kp;
     }
-    public void setPID_Kp(float PID_Kp) {
+    public void setPID_Kp(double PID_Kp) {
         this.PID_Kp = PID_Kp;
     }
 
-    public float getPID_Ki() {
+    public double getPID_Ki() {
         return PID_Ki;
     }
-    public void setPID_Ki(float PID_Ki) {
+    public void setPID_Ki(double PID_Ki) {
         this.PID_Ki = PID_Ki;
     }
 
-    public float getPID_Kd() {
+    public double getPID_Kd() {
         return PID_Kd;
     }
-    public void setPID_Kd(float PID_Kd) {
+    public void setPID_Kd(double PID_Kd) {
         this.PID_Kd = PID_Kd;
     }
+
+    public double getDurationOfDataCollectionInSeconds() {
+        return durationOfDataCollectionInSeconds;
+    }
+
+    public void setDurationOfDataCollection(Duration durationOfDataCollection) {
+        durationOfDataCollectionInSeconds = durationOfDataCollection.toNanos()/1e9;
+        this.durationOfDataCollection = durationOfDataCollection;
+    }
+
 
     public void setPID_RawOutPutArray(double[] PID_RawOutPutArray) {
         this.PID_RawOutPutArray = PID_RawOutPutArray;
@@ -119,7 +132,7 @@ public class clsBallControllerData {
         }
         //mpcPID_OutputValuesArrayList.sort(new EntryXComparator());
         //Create Plottable DataSet - MPChart
-        mpcPID_ScatterDataSet = new ScatterDataSet(mpcPID_OutputValuesArrayList, "CV [PWM]");
+        mpcPID_ScatterDataSet = new ScatterDataSet(mpcPID_OutputValuesArrayList, "CV [mm]");
         mpcPID_ScatterDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
         mpcPID_ScatterDataSet.setColor(ColorTemplate.getHoloBlue());
         mpcPID_ScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
@@ -155,7 +168,7 @@ public class clsBallControllerData {
             PV_OutputArray[i]=(float) PV_val_dbl;
             PV_DataList.add(PV_OutputArray[i]); //For export to firebase
             mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
-            mpcSetPointValuesArrayList.add(new Entry(i, PID_SetPoint));
+            mpcSetPointValuesArrayList.add(new Entry(i, (float)PID_SetPoint));
 
 
         }
@@ -181,7 +194,7 @@ public class clsBallControllerData {
         mpcSetPointScatterDataSet.setDrawValues(false);
     }
 
-    public ScatterData getMPCLineData() {
+    public ScatterData getMpcScatterData() {
 
 
         mpcScatterData = new ScatterData(mpcSetPointScatterDataSet,mpcPV_ScatterDataSet,mpcPID_ScatterDataSet);
@@ -194,8 +207,12 @@ public class clsBallControllerData {
 
     public void exportDataToFirebase(){
 
-            mFbDbRef.child("PV_Values").setValue(PV_DataList);
-            mFbDbRef.child("PID_Values").setValue(PID_DataList);
+
+            mFbDbRef.child("BallCtrlDataName").child("PV_Values").setValue(PV_DataList);
+            mFbDbRef.child("BallCtrlDataName").child("PID_Values").setValue(PID_DataList);
+            mFbDbRef.child("BallCtrlDataName").child("Kp").setValue(PID_Kp);
+            mFbDbRef.child("BallCtrlDataName").child("Ki").setValue(PID_Ki);
+            mFbDbRef.child("BallCtrlDataName").child("Kd").setValue(PID_Kd);
 
     }
 

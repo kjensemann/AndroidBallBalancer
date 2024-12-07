@@ -30,6 +30,9 @@ import com.github.mikephil.charting.utils.EntryXComparator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -56,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int dataLengthInt = 400;//2000; //Size of incoming data array (e.g 1000 bytes)
     private int lastPlotInt = 0; //I.e. is incremented each time new data arrives
+    private Instant timestampControlStartTime; //Set when "CTRL_START_CTRL" is sent to MCU.
+    private Instant timestampControlEndTime;  //Set when data is received back.
+    private Duration timestampControlDuration; //Calculated the "duration". Which can be used to calculate the approximate time between datapoints.
     private int newSetpoint = 130; //Start-Condition, same as AVR.
     private IDataSet<Entry> iDataSet;
     private ScatterDataSet PV_LineDataSet; //Process Variable (e.g. mm distance)
@@ -92,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = currentDateTime.format(formatter);
+        timestampControlStartTime = Instant.now(); //NB: Important to set this variable, or else the "duration calculation" will crash the app.
 
         mFbDbRef.child("Test2").setValue("HI There Test from AVR");
         mFbDbRef.child("Test").setValue("HI There TESTING2 Kristian: " + formattedDateTime);
@@ -108,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
         mBalancerCtrlView.setBallBalancerCtrl_ViewEventListener(new ballBalancerCtrlView.BallBalancerCtrlViewEventListenerInterface() {
             @Override
             public void onSendMessageToTCP_Server(String msg) {
+                if (msg == "CTRL_START_CTRL"){
+                    //Notes down timestamp
+                    timestampControlStartTime = Instant.now(); //Used to calc duration of 1000 datapoints (or however long).
+
+                }
                 mTCPview.sendTCP_StringToServer(msg); //Sends string to TCP server, e.g. "SET_Kp_0.2_Set_Kp"
             }
 
@@ -148,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (bytes.length >= dataLengthInt-1) //From Controller --> To plot behaviour of controller
                 {
+                    timestampControlEndTime = Instant.now();
+                    timestampControlDuration = Duration.between(timestampControlStartTime,timestampControlEndTime);
+
 
                     //StringToByteArray
                     byte[] byteArr = bytes;
@@ -192,12 +207,13 @@ public class MainActivity extends AppCompatActivity {
                     //Set up Object clsBallControllerData, and add to global collection of such objects
                     mBallControllerDataSelected = new clsBallControllerData();
                     BallControllerDataObjectList.add(mBallControllerDataSelected);
-                    mBallControllerDataSelected.setPID_Kp((float)mBalancerCtrlView.getKp_val());
-                    mBallControllerDataSelected.setPID_Ki((float)mBalancerCtrlView.getKi_val());
-                    mBallControllerDataSelected.setPID_Kd((float)mBalancerCtrlView.getKd_val());
+                    mBallControllerDataSelected.setPID_Kp(mBalancerCtrlView.getKp_val());
+                    mBallControllerDataSelected.setPID_Ki(mBalancerCtrlView.getKi_val());
+                    mBallControllerDataSelected.setPID_Kd(mBalancerCtrlView.getKd_val());
                     mBallControllerDataSelected.setPID_SetPoint((float)newSetpoint);
                     mBallControllerDataSelected.setPID_RawOutPutArray(PID_OutPutArray);     //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
                     mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
+                    mBallControllerDataSelected.setDurationOfDataCollection(timestampControlDuration);
 
                     mBallControllerDataSelected.exportDataToFirebase(); //NB TEST ONLY - REMOVE!!
                     //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...
@@ -227,10 +243,10 @@ public class MainActivity extends AppCompatActivity {
                     scatterChart.getAxisRight().setAxisMinimum(0);
 
                     //Adjusts x-axis view when new data comes in.
-                    scatterChart.setData(mBallControllerDataSelected.getMPCLineData());
+                    scatterChart.setData(mBallControllerDataSelected.getMpcScatterData());
                     scatterChart.getScatterData().notifyDataChanged();
                     scatterChart.notifyDataSetChanged();
-                    scatterChart.animateXY(500,500);
+                    scatterChart.animateX(500);
                     scatterChart.invalidate();
 
                     //------- END OLD WAY TO PLOT DATA -----------
@@ -258,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
         //Linechart - X-axis description
         scatterChart.getDescription().setEnabled(true);
         chartDescription = scatterChart.getDescription();
-        chartDescription.setText("20ms Intervals");
+        chartDescription.setText("Approx 20ms Intervals");
         chartDescription.setTextSize(10f);
         chartDescription.setXOffset(20);
         chartDescription.setYOffset(5);
@@ -370,7 +386,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChartDoubleTapped(MotionEvent me) {
 
-                Snackbar.make(scatterChart, "Extend X-axis to 0?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
+                //TEST
+                String showSeconds;
+                showSeconds = String.valueOf(mBallControllerDataSelected.getDurationOfDataCollectionInSeconds());
+                //TEST END
+
+                Snackbar.make(scatterChart, "Extend X-axis to 0? "+ showSeconds, Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         xAxis.setAxisMinimum(0); //Ensures we can see the entire plot
