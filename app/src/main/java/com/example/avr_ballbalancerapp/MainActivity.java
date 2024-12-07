@@ -192,12 +192,12 @@ public class MainActivity extends AppCompatActivity {
                     //Set up Object clsBallControllerData, and add to global collection of such objects
                     mBallControllerDataSelected = new clsBallControllerData();
                     BallControllerDataObjectList.add(mBallControllerDataSelected);
-                    mBallControllerDataSelected.setPID_RawOutPutArray(PID_OutPutArray);     //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
-                    mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
                     mBallControllerDataSelected.setPID_Kp((float)mBalancerCtrlView.getKp_val());
                     mBallControllerDataSelected.setPID_Ki((float)mBalancerCtrlView.getKi_val());
                     mBallControllerDataSelected.setPID_Kd((float)mBalancerCtrlView.getKd_val());
                     mBallControllerDataSelected.setPID_SetPoint((float)newSetpoint);
+                    mBallControllerDataSelected.setPID_RawOutPutArray(PID_OutPutArray);     //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
+                    mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
 
                     mBallControllerDataSelected.exportDataToFirebase(); //NB TEST ONLY - REMOVE!!
                     //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...

@@ -39,8 +39,6 @@ public class clsBallControllerData {
     private float[] PID_OutputArray;
     private float[] PV_OutputArray;
 
-    private float PV_SetPoint;
-
 
     //Firebase Data
     private FirebaseDatabase mFbDb;
@@ -52,9 +50,10 @@ public class clsBallControllerData {
     private ScatterData mpcScatterData;
     private ScatterDataSet mpcPID_ScatterDataSet; //This holds the "plottable data" including info on the plotting properties
     private ScatterDataSet mpcPV_ScatterDataSet;
+    private ScatterDataSet mpcSetPointScatterDataSet;
     private ArrayList<Entry> mpcPID_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values
     private ArrayList<Entry> mpcPV_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values.
-
+    private ArrayList<Entry> mpcSetPointValuesArrayList = new ArrayList<>();
     //Class Constructors
     public clsBallControllerData() {
         mFbDb = FirebaseDatabase.getInstance();
@@ -106,6 +105,7 @@ public class clsBallControllerData {
     }
 
     private void setPID_OutPutArray(double[] myData){
+        //PID=Control Variable = Servo_position
         int dataLength;
         dataLength = myData.length;
         PID_OutputArray = new float[dataLength];
@@ -136,8 +136,12 @@ public class clsBallControllerData {
     public ScatterDataSet getMpcPV_ScatterDataSet() {
         return mpcPV_ScatterDataSet;
     }
+    public ScatterDataSet getMpcSetPoint_ScatterDataSet() {
+        return mpcSetPointScatterDataSet;
+    }
 
     private void setPV_OutPutArray(double[] myData){
+        //PV = Process Variable (mm avstand til sensor)
         int dataLength;
         dataLength = myData.length;
         PV_OutputArray = new float[dataLength];
@@ -151,6 +155,7 @@ public class clsBallControllerData {
             PV_OutputArray[i]=(float) PV_val_dbl;
             PV_DataList.add(PV_OutputArray[i]); //For export to firebase
             mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
+            mpcSetPointValuesArrayList.add(new Entry(i, PID_SetPoint));
 
 
         }
@@ -165,13 +170,21 @@ public class clsBallControllerData {
         mpcPV_ScatterDataSet.setScatterShapeSize(3f);
         mpcPV_ScatterDataSet.setDrawValues(false);
 
-
+        //Prepares SetPoint Dataset
+        mpcSetPointScatterDataSet = new ScatterDataSet(mpcSetPointValuesArrayList, "SetPoint [mm]");
+        mpcSetPointScatterDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        mpcSetPointScatterDataSet.setColor(Color.RED);
+        mpcSetPointScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcSetPointScatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        mpcSetPointScatterDataSet.setScatterShapeHoleRadius(1f);
+        mpcSetPointScatterDataSet.setScatterShapeSize(2f);
+        mpcSetPointScatterDataSet.setDrawValues(false);
     }
 
     public ScatterData getMPCLineData() {
 
 
-        mpcScatterData = new ScatterData(mpcPV_ScatterDataSet,mpcPID_ScatterDataSet);
+        mpcScatterData = new ScatterData(mpcSetPointScatterDataSet,mpcPV_ScatterDataSet,mpcPID_ScatterDataSet);
         mpcScatterData.setValueTextColor(Color.WHITE);
         mpcScatterData.setValueTextSize(9f);
         mpcScatterData.notifyDataChanged();
