@@ -34,7 +34,8 @@ public class clsBallControllerData {
     private double PID_Kd; //Integral, Derivative and Proportional constants.
     private double PID_SetPoint; //SetPoint
     private Duration durationOfDataCollection;
-    private double durationOfDataCollectionInSeconds;
+    private double durationOfDataCollectionInSeconds; // s
+    private double frequencyOfDataCollectionInMilliseconds; //ms
 
     private String dataNameStr;
     private double[] PID_RawOutPutArray;
@@ -103,6 +104,8 @@ public class clsBallControllerData {
 
     public void setDurationOfDataCollection(Duration durationOfDataCollection) {
         durationOfDataCollectionInSeconds = durationOfDataCollection.toNanos()/1e9;
+        frequencyOfDataCollectionInMilliseconds = (durationOfDataCollectionInSeconds-0.1)/((double)PID_OutputArray.length)*1000; //I subtract the delays (-0.1 S = 100ms) added inside the MCU before the control starts.
+
         this.durationOfDataCollection = durationOfDataCollection;
     }
 
@@ -213,6 +216,8 @@ public class clsBallControllerData {
             mFbDbRef.child("BallCtrlDataName").child("PID_Ki").setValue(PID_Ki);
             mFbDbRef.child("BallCtrlDataName").child("PID_Kd").setValue(PID_Kd);
             mFbDbRef.child("BallCtrlDataName").child("PID_SetPoint").setValue(PID_SetPoint);
+            mFbDbRef.child("BallCtrlDataName").child("durationOfDataCollectionInSeconds").setValue(durationOfDataCollectionInSeconds); //All samples
+            mFbDbRef.child("BallCtrlDataName").child("frequencyOfDataCollectionInMilliseconds").setValue(frequencyOfDataCollectionInMilliseconds); //Calculated (
 
     }
 

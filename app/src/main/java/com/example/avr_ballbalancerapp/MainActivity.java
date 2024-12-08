@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private YAxis yRightAxis;
     Description chartDescription;
 
-    private int dataLengthInt = 400;//2000; //Size of incoming data array (e.g 1000 bytes)
+    private int dataLengthInt= 40; ;//this nr is dynamic, moduluse rounded down so that the nr is divisible by 4. It holds the Size of incoming data array (e.g 1000 bytes)4
+    private int dataLengthMinInt = 400;
     private int lastPlotInt = 0; //I.e. is incremented each time new data arrives
     private Instant timestampControlStartTime; //Set when "CTRL_START_CTRL" is sent to MCU.
     private Instant timestampControlEndTime;  //Set when data is received back.
@@ -100,10 +101,11 @@ public class MainActivity extends AppCompatActivity {
         String formattedDateTime = currentDateTime.format(formatter);
         timestampControlStartTime = Instant.now(); //NB: Important to set this variable, or else the "duration calculation" will crash the app.
 
+        //Testing
         mFbDbRef.child("Test2").setValue("HI There Test from AVR");
         mFbDbRef.child("Test").setValue("HI There TESTING2 Kristian: " + formattedDateTime);
-
         mFbDbRef.child("balancerData").child("ConnectionIP").child("IP02").setValue("Hello - " + formattedDateTime);
+        //End testing - delete at some point
 
 
         //VIEWS
@@ -158,11 +160,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onServerBytesReceived(byte[] bytes) {
 
-                if (bytes.length >= dataLengthInt-1) //From Controller --> To plot behaviour of controller
+                if (bytes.length >= dataLengthMinInt-1) //From Controller --> To plot behaviour of controller
                 {
                     timestampControlEndTime = Instant.now();
                     timestampControlDuration = Duration.between(timestampControlStartTime,timestampControlEndTime);
 
+                    dataLengthInt = bytes.length;
+                    int dataLengthIntReminder = dataLengthInt % 4;
+                    if (dataLengthIntReminder == 0) {
+
+                    } else if (dataLengthIntReminder <= 2) {
+                        dataLengthInt = dataLengthInt - dataLengthIntReminder; // Round down
+                    } else {
+                        //dataLengthInt = dataLengthInt + (4 - dataLengthIntReminder); // Round up
+                    }
 
                     //StringToByteArray
                     byte[] byteArr = bytes;
@@ -248,6 +259,8 @@ public class MainActivity extends AppCompatActivity {
                     scatterChart.notifyDataSetChanged();
                     scatterChart.animateX(500);
                     scatterChart.invalidate();
+
+                    xAxis.setAxisMaximum((float)dataLengthInt/4); //I need this, ele datalengthInt = 0
 
                     //------- END OLD WAY TO PLOT DATA -----------
                 }
