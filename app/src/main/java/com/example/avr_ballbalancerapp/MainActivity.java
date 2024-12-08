@@ -11,22 +11,18 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.EntryXComparator;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -102,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         timestampControlStartTime = Instant.now(); //NB: Important to set this variable, or else the "duration calculation" will crash the app.
 
         //Testing
-        mFbDbRef.child("Test2").setValue("HI There Test from AVR");
+        mFbDbRef.child("Test2").setValue("AVR WriteTest");
         mFbDbRef.child("Test").setValue("HI There TESTING2 Kristian: " + formattedDateTime);
         mFbDbRef.child("balancerData").child("ConnectionIP").child("IP02").setValue("Hello - " + formattedDateTime);
         //End testing - delete at some point
@@ -113,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         mTCP_MessageSent = "No TCP Message Sent";
 
         //balancerCtrlView
-        mBalancerCtrlView = (ballBalancerCtrlView)findViewById(R.id.ballBalancerCtrlView);
+        mBalancerCtrlView = findViewById(R.id.ballBalancerCtrlView);
         mBalancerCtrlView.setBallBalancerCtrl_ViewEventListener(new ballBalancerCtrlView.BallBalancerCtrlViewEventListenerInterface() {
             @Override
             public void onSendMessageToTCP_Server(String msg) {
@@ -128,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //TCP_View
-        mTCPview = (TCPview)findViewById(R.id.TCPview);
+        mTCPview = findViewById(R.id.TCPview);
         mTCPview.setTCP_ViewEventListener(new TCPview.TCPviewEventListenerInterface() {
 
             @Override
