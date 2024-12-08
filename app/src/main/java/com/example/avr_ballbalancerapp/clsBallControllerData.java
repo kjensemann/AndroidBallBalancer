@@ -28,6 +28,7 @@ public class clsBallControllerData {
         - Data items are made which can be plotted with MPandroidChart library
 
      ---------------- */
+    private String mBallCtrlDataName;
 
     private double PID_Kp;
     private double PID_Ki;
@@ -58,17 +59,26 @@ public class clsBallControllerData {
     private ArrayList<Entry> mpcPID_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values
     private ArrayList<Entry> mpcPV_OutputValuesArrayList = new ArrayList<>(); //This holds all the datapoints with the values.
     private ArrayList<Entry> mpcSetPointValuesArrayList = new ArrayList<>();
+
     //Class Constructors
     public clsBallControllerData() {
         mFbDb = FirebaseDatabase.getInstance();
         mFbDbRef = mFbDb.getReference().child("balancerData");
+
+        mBallCtrlDataName = "DefaultDataName"; //If changed, data will be written to new tagged place in Firebase
 
         mpcPID_OutputValuesArrayList = new ArrayList<>();
         mpcPV_OutputValuesArrayList = new ArrayList<>();
     }
 
     //Class Fields
+    public String getBallCtrlDataName() {
+        return mBallCtrlDataName;
+    }
 
+    public void setBallCtrlDataName(String ballCtrlDataName) {
+        this.mBallCtrlDataName = ballCtrlDataName;
+    }
     public double getPID_SetPoint() {
         return PID_SetPoint;
     }
@@ -210,14 +220,14 @@ public class clsBallControllerData {
 
     public void exportDataToFirebase(){
 
-            mFbDbRef.child("BallCtrlDataName").child("PV_Values").setValue(PV_DataList);
-            mFbDbRef.child("BallCtrlDataName").child("PID_Values").setValue(PID_DataList);
-            mFbDbRef.child("BallCtrlDataName").child("PID_Kp").setValue(PID_Kp);
-            mFbDbRef.child("BallCtrlDataName").child("PID_Ki").setValue(PID_Ki);
-            mFbDbRef.child("BallCtrlDataName").child("PID_Kd").setValue(PID_Kd);
-            mFbDbRef.child("BallCtrlDataName").child("PID_SetPoint").setValue(PID_SetPoint);
-            mFbDbRef.child("BallCtrlDataName").child("durationOfDataCollectionInSeconds").setValue(durationOfDataCollectionInSeconds); //All samples
-            mFbDbRef.child("BallCtrlDataName").child("frequencyOfDataCollectionInMilliseconds").setValue(frequencyOfDataCollectionInMilliseconds); //Calculated (
+            mFbDbRef.child(mBallCtrlDataName).child("PV_Values").setValue(PV_DataList);
+            mFbDbRef.child(mBallCtrlDataName).child("PID_Values").setValue(PID_DataList);
+            mFbDbRef.child(mBallCtrlDataName).child("PID_Kp").setValue(PID_Kp);
+            mFbDbRef.child(mBallCtrlDataName).child("PID_Ki").setValue(PID_Ki);
+            mFbDbRef.child(mBallCtrlDataName).child("PID_Kd").setValue(PID_Kd);
+            mFbDbRef.child(mBallCtrlDataName).child("PID_SetPoint").setValue(PID_SetPoint);
+            mFbDbRef.child(mBallCtrlDataName).child("durationOfDataCollectionInSeconds").setValue(durationOfDataCollectionInSeconds); //All samples
+            mFbDbRef.child(mBallCtrlDataName).child("frequencyOfDataCollectionInMilliseconds").setValue(frequencyOfDataCollectionInMilliseconds); //Calculated (
 
     }
 

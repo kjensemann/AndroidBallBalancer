@@ -190,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                         k++;
                     }
 
-
                     Snackbar snackbar = Snackbar.make(findViewById(R.id.TCPview),"Byte Length: " + String.valueOf(bytes.length) + " Received",Snackbar.LENGTH_LONG);
                     snackbar.show();
 
@@ -225,29 +224,13 @@ public class MainActivity extends AppCompatActivity {
                     mBallControllerDataSelected.exportDataToFirebase(); //NB TEST ONLY - REMOVE!!
                     //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...
 
-                    //------- OLD WAY TO PLOT DATA TO LINECHART - TO BE DELETED!!
-                    for (int i = 0; i < dataLengthInt/4; i++) {
-                        float val = (float)PID_OutPutArray[i];
-                        PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
-
-                        //Set1 - PV = Distance - Sensor Calculation
-                        float val2 = (float)PID_PV_Array[i];
-                        //PID_PVValuesArrayList.add(new Entry(lastPlotInt, val2)); //Set1 No calculation
-
-                        double PV_val_dbl1;
-                        val2 = val2/1024*5; //Converts it to
-                        PV_val_dbl1 = sharp_get_mm_from_volt(val2);
-                        PID_PVValuesArrayList.add(new Entry(lastPlotInt, (float)PV_val_dbl1)); //Set1 - Calculated value
-
-                        lastPlotInt++;
-
-                    }
-
                     //Adjust y-axes
                     scatterChart.getAxisLeft().setAxisMaximum(mBallControllerDataSelected.getMpcPV_ScatterDataSet().getYMax()*1.2f);
                     scatterChart.getAxisLeft().setAxisMinimum(0);
                     scatterChart.getAxisRight().setAxisMaximum(mBallControllerDataSelected.getMpcPID_ScatterDataSet().getYMax()*1.2f);
                     scatterChart.getAxisRight().setAxisMinimum(0);
+
+                    xAxis.setAxisMaximum((float)dataLengthInt/4); //I need this, ele datalengthInt = 0
 
                     //Adjusts x-axis view when new data comes in.
                     scatterChart.setData(mBallControllerDataSelected.getMpcScatterData());
@@ -255,8 +238,6 @@ public class MainActivity extends AppCompatActivity {
                     scatterChart.notifyDataSetChanged();
                     scatterChart.animateX(500);
                     scatterChart.invalidate();
-
-                    xAxis.setAxisMaximum((float)dataLengthInt/4); //I need this, ele datalengthInt = 0
 
                     //------- END OLD WAY TO PLOT DATA -----------
                 }
