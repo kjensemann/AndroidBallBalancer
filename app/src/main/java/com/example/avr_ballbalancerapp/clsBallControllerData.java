@@ -207,12 +207,12 @@ public class clsBallControllerData {
 
     public void exportDataToFirebase(){
 
-
             mFbDbRef.child("BallCtrlDataName").child("PV_Values").setValue(PV_DataList);
             mFbDbRef.child("BallCtrlDataName").child("PID_Values").setValue(PID_DataList);
-            mFbDbRef.child("BallCtrlDataName").child("Kp").setValue(PID_Kp);
-            mFbDbRef.child("BallCtrlDataName").child("Ki").setValue(PID_Ki);
-            mFbDbRef.child("BallCtrlDataName").child("Kd").setValue(PID_Kd);
+            mFbDbRef.child("BallCtrlDataName").child("PID_Kp").setValue(PID_Kp);
+            mFbDbRef.child("BallCtrlDataName").child("PID_Ki").setValue(PID_Ki);
+            mFbDbRef.child("BallCtrlDataName").child("PID_Kd").setValue(PID_Kd);
+            mFbDbRef.child("BallCtrlDataName").child("PID_SetPoint").setValue(PID_SetPoint);
 
     }
 
