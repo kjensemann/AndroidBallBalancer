@@ -218,8 +218,8 @@ public class clsBallControllerData {
         return mpcScatterData;
     }
 
-    public void exportDataToFirebase(){
-
+    public void exportDataToFirebase(String dataName){
+            mBallCtrlDataName = dataName;
             mFbDbRef.child(mBallCtrlDataName).child("PV_Values").setValue(PV_DataList);
             mFbDbRef.child(mBallCtrlDataName).child("PID_Values").setValue(PID_DataList);
             mFbDbRef.child(mBallCtrlDataName).child("PID_Kp").setValue(PID_Kp);

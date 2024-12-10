@@ -1,12 +1,19 @@
 package com.example.avr_ballbalancerapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -221,9 +228,6 @@ public class MainActivity extends AppCompatActivity {
                     mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
                     mBallControllerDataSelected.setDurationOfDataCollection(timestampControlDuration);
 
-                    mBallControllerDataSelected.exportDataToFirebase(); //NB TEST ONLY - REMOVE!!
-                    //Create NEW WAY TO PLOT DATA, AND A WAY TO PASS THIS TO "EXCEL" ETC, OR TO THE Database where it can be collected...
-
                     //Adjust y-axes
                     scatterChart.getAxisLeft().setAxisMaximum(mBallControllerDataSelected.getMpcPV_ScatterDataSet().getYMax()*1.2f);
                     scatterChart.getAxisLeft().setAxisMinimum(0);
@@ -377,20 +381,34 @@ public class MainActivity extends AppCompatActivity {
             public void onChartDoubleTapped(MotionEvent me) {
 
                 //TEST
+                AlertDialog.Builder builder = new AlertDialog.Builder(scatterChart.getContext());
+                builder.setTitle("Export to firebase - Input DataName");
+
+// Set up the input
+                final EditText input = new EditText(scatterChart.getContext());
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+// Set up the buttons
+                builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String mText = input.getText().toString();
+                        mBallControllerDataSelected.exportDataToFirebase(mText);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
                 String showSeconds;
                 showSeconds = String.valueOf(mBallControllerDataSelected.getDurationOfDataCollectionInSeconds());
                 //TEST END
-
-                Snackbar.make(scatterChart, "Extend X-axis to 0? "+ showSeconds, Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        xAxis.setAxisMinimum(0); //Ensures we can see the entire plot
-                        scatterChart.invalidate();
-                        scatterChart.setScaleMinima(0f, 0f);
-                        scatterChart.fitScreen();
-                        scatterChart.invalidate();
-                    }
-                }).show();
 
             }
 
