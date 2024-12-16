@@ -141,17 +141,21 @@ public class MainActivity extends AppCompatActivity {
                 {
 
                 }
-                else if (msg.contains("ACQ_DISTANCE")){
+                else if (msg.contains("ACQ_DISTANCE"))
+                {
 
                 }
-                else if (msg.contains("Kp")){
+                else if (msg.contains("Kp"))
+                {
                     //Code to set Kp, so that we can store the value
 
                 }
-                else if (msg.contains("Kd")){
+                else if (msg.contains("Kd"))
+                {
                     //Code to set Kp, so that we can store the value
                 }
-                else if (msg.contains("Ki")){
+                else if (msg.contains("Ki"))
+                {
                     //Code to set Kp, so that we can store the value
                 }
 
@@ -283,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
 
         scatterChart.getAxisLeft().setEnabled(true); //SET1 - PV_Values
         yLeftAxis = scatterChart.getAxisLeft();
-        yLeftAxis.setAxisMaximum(1000f); //310 mm MAX
+        yLeftAxis.setAxisMaximum(500f); //310 mm MAX
         yLeftAxis.setAxisMinimum(0f);  // 25 mm MIN
         yLeftAxis.enableGridDashedLine(0f,5f, 0f); //LineLength 0f = no line (only dots)
         yLeftAxis.setTextColor(Color.RED);
@@ -345,21 +349,23 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(scatterChart, "Aqcuire Data?", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        //CAN DELETE BELOW - TESTING!!
                         clsKrisMath krisMath = new clsKrisMath();
 
-                        double[] x_vect = new double[PV_LineDataSet.getEntryCount()];
-                        double[] y_vect = new double[PV_LineDataSet.getEntryCount()];
+                        double[] x_vect = new double[mBallControllerDataSelected.getMpcPID_ScatterDataSet().getEntryCount()];
+                        double[] y_vect = new double[mBallControllerDataSelected.getMpcPV_ScatterDataSet().getEntryCount()];
 
                         int entry_int = 0;
 
                         ArrayList<Entry> dataSetEntryArrayList = new ArrayList<>();
-                        dataSetEntryArrayList.addAll(PV_LineDataSet.getValues());
+                        dataSetEntryArrayList.addAll(mBallControllerDataSelected.getMpcPV_ScatterDataSet().getValues());
 
-                        for (entry_int = 0;entry_int < PV_LineDataSet.getEntryCount();entry_int+=1) {
+                        for (entry_int = 0;entry_int < mBallControllerDataSelected.getMpcPV_ScatterDataSet().getEntryCount();entry_int+=1) {
 
                             //PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
                             Entry thisEntry = new Entry();
-                            thisEntry = PV_LineDataSet.getEntryForIndex(entry_int);
+                            thisEntry = mBallControllerDataSelected.getMpcPV_ScatterDataSet().getEntryForIndex(entry_int);
                             x_vect[entry_int] = (double)thisEntry.getX();
                             y_vect[entry_int] = (double)thisEntry.getY();
                         }
@@ -384,13 +390,13 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(scatterChart.getContext());
                 builder.setTitle("Export to firebase - Input DataName");
 
-// Set up the input
+                // Set up the input
                 final EditText input = new EditText(scatterChart.getContext());
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
 
-// Set up the buttons
+                // Set up the buttons
                 builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

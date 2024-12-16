@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="20dp"
-    android:background="@android:color/holo_blue_light"
+    android:background="@android:color/white"
 
     >
 
@@ -10,7 +10,7 @@
         android:id="@+id/tvContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test"
+        android:text="custom_marker_text"
         android:textSize="12dp"
         android:singleLine="true"
         android:ellipsize="end"
