@@ -28,15 +28,15 @@ public class CustomMarkerView extends MarkerView {
 
         if (highlight.getDataSetIndex() == 0) //CV - Control Value (Servo PWM output)
         {
-            tvContent.setText(String.valueOf("CV [mm]: " + e.getY() + "- x:" + e.getX()));
+            tvContent.setText(String.valueOf("S.P [mm]: " + e.getY()));
         }
         else if (highlight.getDataSetIndex() == 1)
         {
             tvContent.setText(String.valueOf("PV [PWM]: " + e.getY() + "- x:" + e.getX()));
         }
-        else
+        else if (highlight.getDataSetIndex() == 2)
         {
-
+            tvContent.setText(String.valueOf("CV: " + e.getY() + "- x:" + e.getX()));
         }
 
 
