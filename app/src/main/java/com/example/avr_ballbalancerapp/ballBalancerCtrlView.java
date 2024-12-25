@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -69,6 +70,14 @@ public class ballBalancerCtrlView extends View {
     private Rect mServoPosMid_Rect = new Rect();
     private Drawable mServoposMid_Drawable;
 
+    //NEW 2024 - Firebase drawing trends
+    private Rect mPlotRight_Rect = new Rect();
+    private Drawable mPlotRight_Drawable;
+
+    private Rect mPlotLeft_Rect = new Rect();
+    private Drawable mPlotLeft_Drawable;
+
+    //END
     private Drawable mFunctionDrawable;
     private BallBalancerCtrlViewEventListenerInterface mBallBalancerCtrlViewEventListener;
 
@@ -139,6 +148,14 @@ public class ballBalancerCtrlView extends View {
         mServoPosMid_Rect.left = 10;
         mServoPosMid_Rect.top = 10;
 
+        mPlotLeft_Drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.outline_left_black_24dp,null); //  getResources().getDrawable(R.drawable.outline_left_black_24dp,null);
+        mPlotLeft_Rect.left = 10;
+        mPlotLeft_Rect.top = 10;
+
+        mPlotRight_Drawable = getResources().getDrawable(R.drawable.outline_right_black_24dp,null);
+        mPlotRight_Rect.left = 10;
+        mPlotRight_Rect.top = 10;
+
 
         mAnimThread.start();
     }
@@ -189,6 +206,8 @@ public class ballBalancerCtrlView extends View {
         mServoposMin_Drawable.draw(canvas);
         mServoposMid_Drawable.draw(canvas);
 
+        mPlotRight_Drawable.draw(canvas);
+        mPlotLeft_Drawable.draw(canvas);
     }
 
 
@@ -245,11 +264,24 @@ public class ballBalancerCtrlView extends View {
         mServoPosMid_Rect.bottom = mServoPosMid_Rect.top + canvas_height / 3;
         mServoposMid_Drawable.setBounds(mServoPosMid_Rect);
 
-        mStartCtrl_Rect.left = mKp_Rect.right + 0;
+        mStartCtrl_Rect.left = mKp_Rect.right + canvas_width/100*2;
         mStartCtrl_Rect.right = mStartCtrl_Rect.left + (int)(canvas_height*0.5);
         mStartCtrl_Rect.top = canvas_height/10;
         mStartCtrl_Rect.bottom = mStartCtrl_Rect.top + (int)(canvas_height*0.5);
         mStartCtrl_Drawable.setBounds(mStartCtrl_Rect);
+
+        //2024
+        mPlotLeft_Rect.left = mServoPosMax_Rect.left-canvas_width/100*25;
+        mPlotLeft_Rect.right = mPlotLeft_Rect.left + 70;
+        mPlotLeft_Rect.top = mServoPosMax_Rect.bottom-20;
+        mPlotLeft_Rect.bottom = mServoPosMin_Rect.top+20;
+        mPlotLeft_Drawable.setBounds(mPlotLeft_Rect);
+
+        mPlotRight_Rect.left = mPlotLeft_Rect.right + 20;
+        mPlotRight_Rect.right = mPlotRight_Rect.left + 70;
+        mPlotRight_Rect.top = mServoPosMax_Rect.bottom-20;
+        mPlotRight_Rect.bottom = mServoPosMin_Rect.top+20;
+        mPlotRight_Drawable.setBounds(mPlotRight_Rect);
 
         //Function Drawable
 
