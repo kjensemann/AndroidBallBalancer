@@ -76,8 +76,8 @@ public class ballBalancerCtrlView extends View {
 
     private Rect mPlotLeft_Rect = new Rect();
     private Drawable mPlotLeft_Drawable;
-
     //END
+
     private Drawable mFunctionDrawable;
     private BallBalancerCtrlViewEventListenerInterface mBallBalancerCtrlViewEventListener;
 
@@ -157,7 +157,7 @@ public class ballBalancerCtrlView extends View {
         mPlotRight_Rect.top = 10;
 
 
-        mAnimThread.start();
+        mAnimThread.start(); //Thread which is open to receive runnables at any time
     }
 
     public double getKi_val() {
@@ -460,7 +460,7 @@ public class ballBalancerCtrlView extends View {
                 }
                 else if (touchPoint.intersect(mStartCtrl_Rect)) {
                     delayTime = 1000; //Ensures delay is made longer than normal (to avoid sudden disconnection by finger touch)
-                    animateRectangleMovement(mStartCtrl_Rect, mStartCtrl_Drawable, 500);
+                    animateRectangleMovement(mStartCtrl_Rect, mStartCtrl_Drawable, 500,0);
                     if (mCtrlStatus == 0) {
                         Snackbar.make(this, "START Controller", Snackbar.LENGTH_SHORT).setAction("YES", new View.OnClickListener() {
                             @Override
@@ -485,31 +485,40 @@ public class ballBalancerCtrlView extends View {
                 }
                 else if (touchPoint.intersect(mMoveUp_Rect)) {
                     delayTime = 100; //Ensures delay is set
-                    animateRectangleMovement(mMoveUp_Rect, mMoveUp_Drawable, 100);
+                    animateRectangleMovement(mMoveUp_Rect, mMoveUp_Drawable, 100,0);
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SRV_MOVEUP");
 
                 }
                 else if (touchPoint.intersect(mMoveDown_Rect)) {
                     delayTime = 100; //Ensures delay is set
-                    animateRectangleMovement(mMoveDown_Rect, mMoveDown_Drawable,100);
+                    animateRectangleMovement(mMoveDown_Rect, mMoveDown_Drawable,100,0);
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SRV_MOVEDOWN");
                 }
                 else if (touchPoint.intersect(mServoPosMax_Rect)) {
                     delayTime = 200; //Ensures delay is set
-                    animateRectangleMovement(mServoPosMax_Rect, mServoposMax_Drawable,200);
+                    animateRectangleMovement(mServoPosMax_Rect, mServoposMax_Drawable,200,0);
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1900_SERVOPOS");
                 }
                 else if (touchPoint.intersect(mServoPosMin_Rect)) {
                     delayTime = 500; //Ensures delay is set
-                    animateRectangleMovement(mServoPosMin_Rect, mServoposMin_Drawable,200);
+                    animateRectangleMovement(mServoPosMin_Rect, mServoposMin_Drawable,200,0);
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1100_SERVOPOS");
                 }
                 else if (touchPoint.intersect(mServoPosMid_Rect)) {
                     delayTime = 200; //Ensures delay is set
-                    animateRectangleMovement(mServoPosMid_Rect, mServoposMid_Drawable,200);
+                    animateRectangleMovement(mServoPosMid_Rect, mServoposMid_Drawable,200,1);
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
                 }
-                
+                else if (touchPoint.intersect(mPlotLeft_Rect)) {
+                    delayTime = 200; //Ensures delay is set
+                    animateRectangleMovement(mPlotLeft_Rect, mPlotLeft_Drawable,200,1);
+                    //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
+                }
+                else if (touchPoint.intersect(mPlotRight_Rect)) {
+                    delayTime = 200; //Ensures delay is set
+                    animateRectangleMovement(mPlotRight_Rect, mPlotRight_Drawable,200,1);
+                    //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
+                }
             }
         }
 
@@ -532,9 +541,9 @@ public class ballBalancerCtrlView extends View {
     // END INTERFACE ------------------------------------------
 
     //ANIMATION THREADS, HANDLERS AND RUNNABLES
-    private void animateRectangleMovement(Rect myRect, Drawable myDrawable, int duration_ms){
+    private void animateRectangleMovement(Rect myRect, Drawable myDrawable, int duration_ms, int animType){
         Handler animHandler = new Handler(mAnimThread.looper); //binds animHandler to mAnimThread's looper (Non-UI-thread)
-        Runnable mAnimRunnable = new AnimVibrateRunnable(myRect, myDrawable, duration_ms);
+        Runnable mAnimRunnable = new AnimVibrateRunnable(myRect, myDrawable, duration_ms,animType);
         animHandler.post(mAnimRunnable);
     }
 
@@ -560,8 +569,10 @@ public class ballBalancerCtrlView extends View {
         Rect originalDrawableRect;
         Rect newDrawableRect;
         int mDuration_ms;
+        int mAnimTypeInt; //0=left/right, 1=Up/Down
 
-        public AnimVibrateRunnable(Rect drawableRect, Drawable drawable, int duration_ms) {
+        public AnimVibrateRunnable(Rect drawableRect, Drawable drawable, int duration_ms, int animTypeInt) {
+            mAnimTypeInt = animTypeInt;//AnimTypeInt = 0=left/right, 1=Up/Down
             originalDrawable = drawable;
             originalDrawableRect = drawableRect;
             mDuration_ms = duration_ms;
@@ -576,38 +587,71 @@ public class ballBalancerCtrlView extends View {
         public void run() {
             int k = 0;
 
-            for (int i = 0; i <= 100; i++) {
-                SystemClock.sleep(mDuration_ms/100);
-                if (i<25){
-                    k+=1;
-                    newDrawableRect.top = originalDrawableRect.top + k;
-                    newDrawableRect.bottom = originalDrawableRect.bottom + k;
+            if (mAnimTypeInt == 0)          //LEFT-RIGHT-ANIM
+            {
+                for (int i = 0; i <= 100; i++) {
+                    SystemClock.sleep(mDuration_ms / 100);
+                    if (i < 25) {
+                        k += 1;
+                        newDrawableRect.top = originalDrawableRect.top + k;
+                        newDrawableRect.bottom = originalDrawableRect.bottom + k;
 
-                }
-                else if (i < 75)
-                {
-                    k-=1;
-                    newDrawableRect.top = originalDrawableRect.top + k;
-                    newDrawableRect.bottom = originalDrawableRect.bottom + k;
-                }
-                else if (i<100)
-                {
-                    k+=1;
-                    newDrawableRect.top = originalDrawableRect.top + k;
-                    newDrawableRect.bottom = originalDrawableRect.bottom + k;
-                }
-                else if (i==100)
-                {
-                    newDrawableRect = originalDrawableRect;
-                }
-
-                mUI_Handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        originalDrawable.setBounds(newDrawableRect);
-                        invalidate();
+                    } else if (i < 75) {
+                        k -= 1;
+                        newDrawableRect.top = originalDrawableRect.top + k;
+                        newDrawableRect.bottom = originalDrawableRect.bottom + k;
+                    } else if (i < 100) {
+                        k += 1;
+                        newDrawableRect.top = originalDrawableRect.top + k;
+                        newDrawableRect.bottom = originalDrawableRect.bottom + k;
+                    } else if (i == 100) {
+                        newDrawableRect = originalDrawableRect;
                     }
-                });
+
+                    mUI_Handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            originalDrawable.setBounds(newDrawableRect);
+                            invalidate();
+                        }
+                    });
+
+                }
+            }
+                else if (mAnimTypeInt == 1)   //UP-DOWN-ANIM
+            {
+                for (int i = 0; i <= 100; i++) {
+                    SystemClock.sleep(mDuration_ms / 100);
+                    if (i < 25) {
+                        k += 1;
+                        newDrawableRect.left = originalDrawableRect.left + k;
+                        newDrawableRect.right = originalDrawableRect.right + k;
+
+                    } else if (i < 75) {
+                        k -= 1;
+                        newDrawableRect.left   = originalDrawableRect.left + k;
+                        newDrawableRect.right = originalDrawableRect.right + k;
+                    } else if (i < 100) {
+                        k += 1;
+                        newDrawableRect.left = originalDrawableRect.left + k;
+                        newDrawableRect.right = originalDrawableRect.right + k;
+                    } else if (i == 100) {
+                        newDrawableRect = originalDrawableRect;
+                    }
+
+                    mUI_Handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            originalDrawable.setBounds(newDrawableRect);
+                            invalidate();
+                        }
+                    });
+                }
+            }
+
+
+
+
 
             }
 
@@ -617,5 +661,4 @@ public class ballBalancerCtrlView extends View {
 
     }
 
-}
 
