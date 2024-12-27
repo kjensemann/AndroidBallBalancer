@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,8 +32,11 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -40,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     //clsBallControllerDataObjects - Which are stored and can be plotted
     private clsBallControllerData mBallControllerDataSelected;
-    private List<clsBallControllerData> BallControllerDataObjectList = new ArrayList<>();
+    private List<clsBallControllerData> mBallControllerDataObjectList = new ArrayList<>();
 
     //TEST NEW TCP CLIENT
     private Button newTCP_Button;
@@ -107,7 +112,12 @@ public class MainActivity extends AppCompatActivity {
         //Testing
         mFbDbRef.child("Test2").setValue("AVR WriteTest");
         mFbDbRef.child("Test").setValue("HI There TESTING2 Kristian: " + formattedDateTime);
-        mFbDbRef.child("balancerData").child("ConnectionIP").child("IP02").setValue("Hello - " + formattedDateTime);
+        //mFbDbRef.child("balancerData").child("ConnectionIP").child("IP02").setValue("Hello - " + formattedDateTime);
+
+        // GET DATA FROM FIREBASE
+        sPopulateBallControllerDataObjectListFromFireBase();
+
+
         //End testing - delete at some point
 
 
@@ -120,12 +130,21 @@ public class MainActivity extends AppCompatActivity {
         mBalancerCtrlView.setBallBalancerCtrl_ViewEventListener(new ballBalancerCtrlView.BallBalancerCtrlViewEventListenerInterface() {
             @Override
             public void onSendMessageToTCP_Server(String msg) {
-                if (msg == "CTRL_START_CTRL"){
+                if (msg.contains("CTRL_START_CTRL")){
                     //Notes down timestamp
                     timestampControlStartTime = Instant.now(); //Used to calc duration of 1000 datapoints (or however long).
-
                 }
                 mTCPview.sendTCP_StringToServer(msg); //Sends string to TCP server, e.g. "SET_Kp_0.2_Set_Kp"
+            }
+
+            @Override
+            public void onButtonPressedEvent(String buttonTagStr) {
+                if (buttonTagStr.contains("NextPlot")){
+
+                }
+                else if (buttonTagStr.contains("PrevPlot")){
+
+                }
             }
 
         });
@@ -223,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Set up Object clsBallControllerData, and add to global collection of such objects
                     mBallControllerDataSelected = new clsBallControllerData();
-                    BallControllerDataObjectList.add(mBallControllerDataSelected);
+                    mBallControllerDataObjectList.add(mBallControllerDataSelected);
                     mBallControllerDataSelected.setPID_Kp(mBalancerCtrlView.getKp_val());
                     mBallControllerDataSelected.setPID_Ki(mBalancerCtrlView.getKi_val());
                     mBallControllerDataSelected.setPID_Kd(mBalancerCtrlView.getKd_val());
@@ -515,7 +534,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //TESTING SECTION
+    private void sPopulateBallControllerDataObjectListFromFireBase(){
 
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("balancerData");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot balancerDataSnapshot : snapshot.getChildren())
+                {
+                    String dataKey = balancerDataSnapshot.getKey();
+                    Double PID_KD = balancerDataSnapshot.child("PID_Kd").getValue(Double.class);
+                    Double PID_KI = balancerDataSnapshot.child(snapshot.getKey()).child("PID_Ki").getValue(Double.class);
+                    List<String> hobbies = (List<String>) balancerDataSnapshot.child("PID_Values").getValue();
+
+                    Log.d("Firebase", "Hobbies: " + hobbies);
+
+                }
+                }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("Firebase", "Error: " + error.getMessage());
+            }
+        });
+
+    }
 
 
 }

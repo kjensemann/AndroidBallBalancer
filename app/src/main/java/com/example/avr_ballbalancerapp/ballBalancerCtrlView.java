@@ -501,23 +501,27 @@ public class ballBalancerCtrlView extends View {
                 }
                 else if (touchPoint.intersect(mServoPosMin_Rect)) {
                     delayTime = 500; //Ensures delay is set
-                    animateRectangleMovement(mServoPosMin_Rect, mServoposMin_Drawable,200,0);
+                    animateRectangleMovement(mServoPosMin_Rect, mServoposMin_Drawable,200,0);//0=UpDownVibration
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1100_SERVOPOS");
                 }
                 else if (touchPoint.intersect(mServoPosMid_Rect)) {
                     delayTime = 200; //Ensures delay is set
-                    animateRectangleMovement(mServoPosMid_Rect, mServoposMid_Drawable,200,1);
+                    animateRectangleMovement(mServoPosMid_Rect, mServoposMid_Drawable,200,1); //1=LeftRightVibration
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
                 }
                 else if (touchPoint.intersect(mPlotLeft_Rect)) {
                     delayTime = 200; //Ensures delay is set
-                    animateRectangleMovement(mPlotLeft_Rect, mPlotLeft_Drawable,200,1);
+                    animateRectangleMovement(mPlotLeft_Rect, mPlotLeft_Drawable,200,1);//1=LeftRightVibration
                     //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
+
+
                 }
                 else if (touchPoint.intersect(mPlotRight_Rect)) {
                     delayTime = 200; //Ensures delay is set
-                    animateRectangleMovement(mPlotRight_Rect, mPlotRight_Drawable,200,1);
+                    animateRectangleMovement(mPlotRight_Rect, mPlotRight_Drawable,200,1);//1=LeftRightVibration
                     //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
+
+
                 }
             }
         }
@@ -535,7 +539,7 @@ public class ballBalancerCtrlView extends View {
 
     public interface BallBalancerCtrlViewEventListenerInterface {
         public void onSendMessageToTCP_Server(String msg); //Event raised for outside listeners when android app sends message to server (e.g. to ESP8266) (Eg. change in setpoint, Kp, Ki etc
-
+        public void onButtonPressedEvent(String buttonTagStr); //Event raised for outside listeners of button presses
     }
 
     // END INTERFACE ------------------------------------------
@@ -648,10 +652,6 @@ public class ballBalancerCtrlView extends View {
                     });
                 }
             }
-
-
-
-
 
             }
 
