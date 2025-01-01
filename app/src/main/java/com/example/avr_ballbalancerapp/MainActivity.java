@@ -559,6 +559,12 @@ public class MainActivity extends AppCompatActivity {
                         newData.setPID_Kp(PID_Kp);
                         newData.setPID_SetPoint(setPoint);
 
+                        newData.setPV_OutPutArrayFromFirebase(PV_Values);
+                        newData.setPID_OutPutArrayFromFirebase(PID_Values);
+
+                        mBallControllerDataObjectList.add(newData);
+
+
 
                     }
                 }

@@ -1,6 +1,7 @@
 package com.example.avr_ballbalancerapp;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.YAxis;
@@ -156,6 +157,54 @@ public class clsBallControllerData {
 
     }
 
+    public void setPID_OutPutArrayFromFirebase(List<Double> myData){
+        //PID=Control Variable = Servo_position
+        int dataLength;
+        dataLength = myData.size();
+        PID_OutputArray = new float[dataLength];
+        List<Double> rawList = myData;
+
+        List<Double> PID2_Values = new ArrayList<>();
+        //CONVERSION LONG TO DOUBLE
+        if (rawList != null) {
+
+            for (Object item : rawList) {
+                if (item instanceof Long) {
+                    PID2_Values.add(((Long) item).doubleValue());
+                } else if (item instanceof Double) {
+                    PID2_Values.add((Double) item);
+                }
+            }
+            // Print the converted PID_Values
+            for (Double value : PID2_Values) {
+                Log.d("Firebase", "PID Value: " + value);
+            }
+        } else {
+            Log.e("Firebase", "PID_Values is null or not properly structured.");
+        }
+
+        //END CONVERSION
+
+        for (int i = 0; i < dataLength; i++) {
+            float val = (float)PID2_Values.get(i).doubleValue();
+            PID_OutputArray[i]=val;
+            PID_DataList.add(val); //For export to firebase
+            //PID_OutputValuesArrayList.add(new Entry(lastPlotInt, val)); //Set2
+            mpcPID_OutputValuesArrayList.add(new Entry(i, PID_OutputArray[i])); //Set1 - Calculated value
+        }
+        //mpcPID_OutputValuesArrayList.sort(new EntryXComparator());
+        //Create Plottable DataSet - MPChart
+        mpcPID_ScatterDataSet = new ScatterDataSet(mpcPID_OutputValuesArrayList, "CV [mm]");
+        mpcPID_ScatterDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        mpcPID_ScatterDataSet.setColor(ColorTemplate.getHoloBlue());
+        mpcPID_ScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcPID_ScatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        mpcPID_ScatterDataSet.setScatterShapeHoleRadius(2f);
+        mpcPID_ScatterDataSet.setScatterShapeSize(3f);
+        mpcPID_ScatterDataSet.setDrawValues(false);
+
+    }
+
     public ScatterDataSet getMpcPID_ScatterDataSet() {
         return mpcPID_ScatterDataSet;
     }
@@ -179,6 +228,44 @@ public class clsBallControllerData {
             val2 = val2/1024*5; //Converts it to
             PV_val_dbl = sharp_get_mm_from_volt(val2);
             PV_OutputArray[i]=(float) PV_val_dbl;
+            PV_DataList.add(PV_OutputArray[i]); //For export to firebase
+            mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
+            mpcSetPointValuesArrayList.add(new Entry(i, (float)PID_SetPoint));
+
+
+        }
+        //CREATE PLOTTABLE DATASET - MPChart
+        //mpcPV_OutputValuesArrayList.sort(new EntryXComparator());
+        mpcPV_ScatterDataSet = new ScatterDataSet(mpcPV_OutputValuesArrayList,"PV [mm]");
+        mpcPV_ScatterDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        mpcPV_ScatterDataSet.setColor(Color.RED);
+        mpcPV_ScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcPV_ScatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        mpcPV_ScatterDataSet.setScatterShapeHoleRadius(2f);
+        mpcPV_ScatterDataSet.setScatterShapeSize(3f);
+        mpcPV_ScatterDataSet.setDrawValues(false);
+
+        //Prepares SetPoint Dataset
+        mpcSetPointScatterDataSet = new ScatterDataSet(mpcSetPointValuesArrayList, "SetPoint [mm]");
+        mpcSetPointScatterDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        mpcSetPointScatterDataSet.setColor(Color.RED);
+        mpcSetPointScatterDataSet.setHighLightColor(Color.rgb(244, 117, 117));
+        mpcSetPointScatterDataSet.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
+        mpcSetPointScatterDataSet.setScatterShapeHoleRadius(1f);
+        mpcSetPointScatterDataSet.setScatterShapeSize(2f);
+        mpcSetPointScatterDataSet.setDrawValues(false);
+    }
+
+    public void setPV_OutPutArrayFromFirebase(List<Double> myData){
+        //PV = Process Variable (mm avstand til sensor)
+        int dataLength;
+        dataLength = myData.size();
+        PV_OutputArray = new float[dataLength];
+        for (int i = 0; i < dataLength; i++) {
+
+            //Set1 - PV = Distance - Sensor Calculation
+            float val2 = (float)myData.get(i).doubleValue();
+            PV_OutputArray[i]=(float) val2;
             PV_DataList.add(PV_OutputArray[i]); //For export to firebase
             mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
             mpcSetPointValuesArrayList.add(new Entry(i, (float)PID_SetPoint));
