@@ -542,15 +542,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot balancerDataSnapshot : snapshot.getChildren())
-                {
-                    String dataKey = balancerDataSnapshot.getKey();
-                    Double PID_KD = balancerDataSnapshot.child("PID_Kd").getValue(Double.class);
-                    Double PID_KI = balancerDataSnapshot.child(snapshot.getKey()).child("PID_Ki").getValue(Double.class);
-                    List<String> hobbies = (List<String>) balancerDataSnapshot.child("PID_Values").getValue();
+                    {
+                        String dataKey = balancerDataSnapshot.getKey();
+                        Double PID_Kd = balancerDataSnapshot.child("PID_Kd").getValue(Double.class);
+                        Double PID_Ki = balancerDataSnapshot.child("PID_Ki").getValue(Double.class);
+                        Double PID_Kp = balancerDataSnapshot.child("PID_Kp").getValue(Double.class);
+                        Double setPoint = balancerDataSnapshot.child("PID_SetPoint").getValue(Double.class);
+                        List<Double> PID_Values = (List<Double>) balancerDataSnapshot.child("PID_Values").getValue();
+                        List<Double> PV_Values = (List<Double>) balancerDataSnapshot.child("PV_Values").getValue();
+                        Log.d("Firebase", "Hobbies: " + PV_Values);
 
-                    Log.d("Firebase", "Hobbies: " + hobbies);
+                        clsBallControllerData newData = new clsBallControllerData();
+                        newData.setBallCtrlDataName(dataKey);
+                        newData.setPID_Kd(PID_Kd);
+                        newData.setPID_Ki(PID_Ki);
+                        newData.setPID_Kp(PID_Kp);
+                        newData.setPID_SetPoint(setPoint);
 
-                }
+
+                    }
                 }
 
             @Override
