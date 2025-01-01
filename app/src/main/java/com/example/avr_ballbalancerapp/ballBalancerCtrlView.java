@@ -513,12 +513,14 @@ public class ballBalancerCtrlView extends View {
                     delayTime = 200; //Ensures delay is set
                     animateRectangleMovement(mPlotLeft_Rect, mPlotLeft_Drawable,200,1);//1=LeftRightVibration
                     //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
-
+                    mBallBalancerCtrlViewEventListener.onButtonPressedEvent("PlotPrev");
 
                 }
                 else if (touchPoint.intersect(mPlotRight_Rect)) {
                     delayTime = 200; //Ensures delay is set
                     animateRectangleMovement(mPlotRight_Rect, mPlotRight_Drawable,200,1);//1=LeftRightVibration
+                    mBallBalancerCtrlViewEventListener.onButtonPressedEvent("PlotNext");
+
                     //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
 
 

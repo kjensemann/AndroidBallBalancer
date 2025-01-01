@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int dataLengthInt= 40; ;//this nr is dynamic, moduluse rounded down so that the nr is divisible by 4. It holds the Size of incoming data array (e.g 1000 bytes)4
     private int dataLengthMinInt = 400;
-    private int lastPlotInt = 0; //I.e. is incremented each time new data arrives
+    private int thisPlotInt = 0;
+    private int maxPlotInt = 0;
     private Instant timestampControlStartTime; //Set when "CTRL_START_CTRL" is sent to MCU.
     private Instant timestampControlEndTime;  //Set when data is received back.
     private Duration timestampControlDuration; //Calculated the "duration". Which can be used to calculate the approximate time between datapoints.
@@ -139,10 +140,33 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onButtonPressedEvent(String buttonTagStr) {
-                if (buttonTagStr.contains("NextPlot")){
+                if (buttonTagStr.contains("PlotNext")){
+
+                    maxPlotInt = mBallControllerDataObjectList.size();
+                    thisPlotInt += 1;
+                    if (thisPlotInt >= maxPlotInt){
+                        thisPlotInt = 0;
+                    }
+                    else {
+
+                    }
+
+                    mBallControllerDataSelected = mBallControllerDataObjectList.get(thisPlotInt);
+                    sPlotData(mBallControllerDataSelected);
 
                 }
-                else if (buttonTagStr.contains("PrevPlot")){
+                else if (buttonTagStr.contains("PlotPrev")){
+                    maxPlotInt = mBallControllerDataObjectList.size();
+                    thisPlotInt -= 1;
+                    if (thisPlotInt < 0){
+                        thisPlotInt = maxPlotInt-1;
+                    }
+                    else {
+
+                    }
+
+                    mBallControllerDataSelected = mBallControllerDataObjectList.get(thisPlotInt);
+                    sPlotData(mBallControllerDataSelected);
 
                 }
             }
@@ -240,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                     //Get PID OutPut Values - Servo Pos
                     //Get PID PV Values - Distance
 
-                    //Set up Object clsBallControllerData, and add to global collection of such objects
+                    //Set up Object mBallControllerData, and add to global collection of such objects
                     mBallControllerDataSelected = new clsBallControllerData();
                     mBallControllerDataObjectList.add(mBallControllerDataSelected);
                     mBallControllerDataSelected.setPID_Kp(mBalancerCtrlView.getKp_val());
@@ -251,22 +275,9 @@ public class MainActivity extends AppCompatActivity {
                     mBallControllerDataSelected.setPV_RawOutPutArray(PID_PV_Array);         //Creates plottable float arrays and prepares MPChart data objects which can be plotted.
                     mBallControllerDataSelected.setDurationOfDataCollection(timestampControlDuration);
 
-                    //Adjust y-axes
-                    scatterChart.getAxisLeft().setAxisMaximum(mBallControllerDataSelected.getMpcPV_ScatterDataSet().getYMax()*1.2f);
-                    scatterChart.getAxisLeft().setAxisMinimum(0);
-                    scatterChart.getAxisRight().setAxisMaximum(mBallControllerDataSelected.getMpcPID_ScatterDataSet().getYMax()*1.2f);
-                    scatterChart.getAxisRight().setAxisMinimum(0);
+                    //PLOTS THE DATA IN mBallControllerDataSelected
+                    sPlotData(mBallControllerDataSelected);
 
-                    xAxis.setAxisMaximum((float)dataLengthInt/4); //I need this, ele datalengthInt = 0
-
-                    //Adjusts x-axis view when new data comes in.
-                    scatterChart.setData(mBallControllerDataSelected.getMpcScatterData());
-                    scatterChart.getScatterData().notifyDataChanged();
-                    scatterChart.notifyDataSetChanged();
-                    scatterChart.animateX(500);
-                    scatterChart.invalidate();
-
-                    //------- END OLD WAY TO PLOT DATA -----------
                 }
             }
 
@@ -562,11 +573,13 @@ public class MainActivity extends AppCompatActivity {
                         newData.setPV_OutPutArrayFromFirebase(PV_Values);
                         newData.setPID_OutPutArrayFromFirebase(PID_Values);
 
-                        mBallControllerDataObjectList.add(newData);
-
-
+                        mBallControllerDataObjectList.add(newData); //Populates the collection with data from firebase. Dataitems can be pltted using.
 
                     }
+
+                    thisPlotInt = 0;
+                    mBallControllerDataSelected = mBallControllerDataObjectList.get(thisPlotInt);
+                    sPlotData(mBallControllerDataSelected);
                 }
 
             @Override
@@ -574,6 +587,25 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Firebase", "Error: " + error.getMessage());
             }
         });
+
+    }
+
+    private void sPlotData(clsBallControllerData dataToPlot){
+
+        //Adjust y-axes
+        scatterChart.getAxisLeft().setAxisMaximum(dataToPlot.getMpcPV_ScatterDataSet().getYMax()*1.2f);
+        scatterChart.getAxisLeft().setAxisMinimum(0);
+        scatterChart.getAxisRight().setAxisMaximum(dataToPlot.getMpcPID_ScatterDataSet().getYMax()*1.2f);
+        scatterChart.getAxisRight().setAxisMinimum(0);
+
+        xAxis.setAxisMaximum((float)dataToPlot.getMpcPV_ScatterDataSet().getEntryCount()+10); //I need this, ele datalengthInt = 0
+
+        //Adjusts x-axis view when new data comes in.
+        scatterChart.setData(dataToPlot.getMpcScatterData());
+        scatterChart.getScatterData().notifyDataChanged();
+        scatterChart.notifyDataSetChanged();
+        scatterChart.animateX(500);
+        scatterChart.invalidate();
 
     }
 
