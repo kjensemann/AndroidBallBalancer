@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mBallControllerDataSelected = mBallControllerDataObjectList.get(thisPlotInt);
                     sPlotData(mBallControllerDataSelected);
-
+                    mBalancerCtrlView.setBallControllerData(mBallControllerDataSelected);
                 }
                 else if (buttonTagStr.contains("PlotPrev")){
                     maxPlotInt = mBallControllerDataObjectList.size();
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mBallControllerDataSelected = mBallControllerDataObjectList.get(thisPlotInt);
                     sPlotData(mBallControllerDataSelected);
-
+                    mBalancerCtrlView.setBallControllerData(mBallControllerDataSelected);
                 }
             }
 

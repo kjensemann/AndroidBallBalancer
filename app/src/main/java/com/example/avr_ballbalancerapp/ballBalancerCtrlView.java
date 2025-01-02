@@ -36,6 +36,9 @@ public class ballBalancerCtrlView extends View {
     private int canvas_height;
     private int canvas_width;
 
+    //ballControllerData
+    private clsBallControllerData mBallControllerData;
+
     //View Objects
     Paint mPaintTextOrangeDark = new Paint(Paint.ANTI_ALIAS_FLAG);
     Paint mPaintTextHeadingGrey = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -532,6 +535,18 @@ public class ballBalancerCtrlView extends View {
 
         return true;
 
+    }
+
+    //BallControllerDataObjects
+    public void setBallControllerData(clsBallControllerData ballControllerData){
+        mBallControllerData = ballControllerData;
+
+        //Update Ki, Kp, Kd, SetPoint etc from incoming ballControllerData
+        mKd_val = mBallControllerData.getPID_Kd();
+        mKi_val = mBallControllerData.getPID_Ki();
+        mKp_val = mBallControllerData.getPID_Kp();
+
+        invalidate();
     }
 
     //TCP_View Interface -------------------------------------
