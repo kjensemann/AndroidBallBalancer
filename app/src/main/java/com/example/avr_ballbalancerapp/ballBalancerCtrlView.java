@@ -73,12 +73,15 @@ public class ballBalancerCtrlView extends View {
     private Rect mServoPosMid_Rect = new Rect();
     private Drawable mServoposMid_Drawable;
 
-    //NEW 2024 - Firebase drawing trends
+    //NEW 2024/2025 - Firebase drawing trends
     private Rect mPlotRight_Rect = new Rect();
     private Drawable mPlotRight_Drawable;
 
     private Rect mPlotLeft_Rect = new Rect();
     private Drawable mPlotLeft_Drawable;
+
+    private Rect mPlotName_Rect = new Rect();
+    private String mPlotNameStr = "NoName";
     //END
 
     private Drawable mFunctionDrawable;
@@ -159,6 +162,8 @@ public class ballBalancerCtrlView extends View {
         mPlotRight_Rect.left = 10;
         mPlotRight_Rect.top = 10;
 
+        mPlotName_Rect.left = 10;
+        mPlotName_Rect.right = 10;
 
         mAnimThread.start(); //Thread which is open to receive runnables at any time
     }
@@ -187,6 +192,7 @@ public class ballBalancerCtrlView extends View {
         canvas.drawText("Kd: ",mKd_Rect.left,mKd_Rect.top+mPaintTextOrangeDark.getTextSize(),mPaintTextOrangeDark);
         canvas.drawText(Double.toString(mKd_val) ,mKd_Rect.left+70,mKd_Rect.top+mPaintTextOrangeDark.getTextSize(),mPaintTextNormalBoldGrey);
 
+        canvas.drawText("Name: " + mPlotNameStr,mPlotName_Rect.left,mPlotName_Rect.top+mPaintTextNormalGreen.getTextSize(),mPaintTextNormalGreen);
         //canvas.drawText("SetPoint",canvas_width/2,canvas_height-10,mPaintTextNormalGrey);
 
 
@@ -280,12 +286,16 @@ public class ballBalancerCtrlView extends View {
         mPlotLeft_Rect.bottom = mServoPosMin_Rect.top+20;
         mPlotLeft_Drawable.setBounds(mPlotLeft_Rect);
 
-        mPlotRight_Rect.left = mPlotLeft_Rect.right + 20;
-        mPlotRight_Rect.right = mPlotRight_Rect.left + 70;
-        mPlotRight_Rect.top = mServoPosMax_Rect.bottom-20;
-        mPlotRight_Rect.bottom = mServoPosMin_Rect.top+20;
+        mPlotRight_Rect.left    = mPlotLeft_Rect.right + 20;
+        mPlotRight_Rect.right   = mPlotRight_Rect.left + 70;
+        mPlotRight_Rect.top     = mServoPosMax_Rect.bottom-20;
+        mPlotRight_Rect.bottom  = mServoPosMin_Rect.top+20;
         mPlotRight_Drawable.setBounds(mPlotRight_Rect);
 
+        mPlotName_Rect.left     = mPlotLeft_Rect.left;
+        mPlotName_Rect.right    = mPlotRight_Rect.right;
+        mPlotName_Rect.top      = mServoPosMax_Rect.top;
+        mPlotName_Rect.bottom   = mServoPosMax_Rect.bottom;
         //Function Drawable
 
     }
@@ -545,6 +555,8 @@ public class ballBalancerCtrlView extends View {
         mKd_val = mBallControllerData.getPID_Kd();
         mKi_val = mBallControllerData.getPID_Ki();
         mKp_val = mBallControllerData.getPID_Kp();
+
+        mPlotNameStr = mBallControllerData.getBallCtrlDataName();
 
         invalidate();
     }
