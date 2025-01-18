@@ -266,7 +266,7 @@ public class clsBallControllerData {
             //Set1 - PV = Distance - Sensor Calculation
             float val2 = (float)myData.get(i).doubleValue();
             PV_OutputArray[i]=(float) val2;
-            PV_DataList.add(PV_OutputArray[i]); //For export to firebase
+            PV_DataList.add(PV_OutputArray[i]);
             mpcPV_OutputValuesArrayList.add(new Entry(i, PV_OutputArray[i])); //Set1 - Calculated value
             mpcSetPointValuesArrayList.add(new Entry(i, (float)PID_SetPoint));
 

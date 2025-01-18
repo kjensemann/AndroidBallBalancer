@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private Instant timestampControlStartTime; //Set when "CTRL_START_CTRL" is sent to MCU.
     private Instant timestampControlEndTime;  //Set when data is received back.
     private Duration timestampControlDuration; //Calculated the "duration". Which can be used to calculate the approximate time between datapoints.
-    private int newSetpoint = 130; //Start-Condition, same as AVR.
+    private int newSetpoint = 120; //Start-Condition, same as AVR.
     private IDataSet<Entry> iDataSet;
     private ScatterDataSet PV_LineDataSet; //Process Variable (e.g. mm distance)
     private ScatterDataSet CV_LineDataSet; //Control Variable
