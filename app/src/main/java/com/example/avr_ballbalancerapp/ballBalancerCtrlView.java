@@ -74,6 +74,9 @@ public class ballBalancerCtrlView extends View {
     private Drawable mServoposMid_Drawable;
 
     //NEW 2024/2025 - Firebase drawing trends
+    private Rect mRuler_Rect = new Rect();
+    private Drawable mRuler_Drawable;
+
     private Rect mPlotRight_Rect = new Rect();
     private Drawable mPlotRight_Drawable;
 
@@ -154,11 +157,15 @@ public class ballBalancerCtrlView extends View {
         mServoPosMid_Rect.left = 10;
         mServoPosMid_Rect.top = 10;
 
+        mRuler_Drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.mm_ruler_grey, null);
+        mRuler_Rect.left = 10;
+        mRuler_Rect.top = 10;
+
         mPlotLeft_Drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.outline_left_black_24dp,null); //  getResources().getDrawable(R.drawable.outline_left_black_24dp,null);
         mPlotLeft_Rect.left = 10;
         mPlotLeft_Rect.top = 10;
 
-        mPlotRight_Drawable = getResources().getDrawable(R.drawable.outline_right_black_24dp,null);
+        mPlotRight_Drawable = ResourcesCompat.getDrawable(getResources(),R.drawable.outline_right_black_24dp,null);
         mPlotRight_Rect.left = 10;
         mPlotRight_Rect.top = 10;
 
@@ -215,6 +222,7 @@ public class ballBalancerCtrlView extends View {
         mServoposMin_Drawable.draw(canvas);
         mServoposMid_Drawable.draw(canvas);
 
+        mRuler_Drawable.draw(canvas);
         mPlotRight_Drawable.draw(canvas);
         mPlotLeft_Drawable.draw(canvas);
     }
@@ -275,11 +283,17 @@ public class ballBalancerCtrlView extends View {
 
         mStartCtrl_Rect.left = mKp_Rect.right + canvas_width/100*2;
         mStartCtrl_Rect.right = mStartCtrl_Rect.left + (int)(canvas_height*0.5);
-        mStartCtrl_Rect.top = canvas_height/10;
+        mStartCtrl_Rect.top = canvas_height/20;
         mStartCtrl_Rect.bottom = mStartCtrl_Rect.top + (int)(canvas_height*0.5);
         mStartCtrl_Drawable.setBounds(mStartCtrl_Rect);
 
-        //2024
+        //2024/2025
+        mRuler_Rect.left = mStartCtrl_Rect.left;
+        mRuler_Rect.right = mRuler_Rect.left + (int)(canvas_height*0.5);
+        mRuler_Rect.top = mStartCtrl_Rect.bottom+20;
+        mRuler_Rect.bottom = mRuler_Rect.top + (int)(canvas_height*0.5);
+        mRuler_Drawable.setBounds(mRuler_Rect);
+
         mPlotLeft_Rect.left = mServoPosMax_Rect.left-canvas_width/100*25;
         mPlotLeft_Rect.right = mPlotLeft_Rect.left + 70;
         mPlotLeft_Rect.top = mServoPosMax_Rect.bottom-20;
@@ -521,6 +535,13 @@ public class ballBalancerCtrlView extends View {
                     delayTime = 200; //Ensures delay is set
                     animateRectangleMovement(mServoPosMid_Rect, mServoposMid_Drawable,200,1); //1=LeftRightVibration
                     mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
+                }
+                else if (touchPoint.intersect(mRuler_Rect)) {
+                    delayTime = 200; //Ensures delay is set
+                    animateRectangleMovement(mRuler_Rect, mRuler_Drawable,200,1);//1=LeftRightVibration
+                    //mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SERVOPOS_1582_SERVOPOS");
+                    mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("ACQ_DISTANCE");
+
                 }
                 else if (touchPoint.intersect(mPlotLeft_Rect)) {
                     delayTime = 200; //Ensures delay is set
