@@ -597,7 +597,6 @@ public class MainActivity extends AppCompatActivity {
         scatterChart.getAxisLeft().setAxisMinimum(0);
         scatterChart.getAxisRight().setAxisMaximum(dataToPlot.getMpcPID_ScatterDataSet().getYMax()*1.2f);
         scatterChart.getAxisRight().setAxisMinimum(0);
-
         xAxis.setAxisMaximum((float)dataToPlot.getMpcPV_ScatterDataSet().getEntryCount()+10); //I need this, ele datalengthInt = 0
 
         //Adjusts x-axis view when new data comes in.
@@ -605,6 +604,14 @@ public class MainActivity extends AppCompatActivity {
         scatterChart.getScatterData().notifyDataChanged();
         scatterChart.notifyDataSetChanged();
         scatterChart.animateX(500);
+
+        Description chartDesc = new Description();
+        chartDesc.setText(mBallControllerDataSelected.getBallCtrlDataName()); // Set your title text
+        chartDesc.setTextSize(16f); // Adjust the text size
+        chartDesc.setTextColor(Color.BLACK); // Adjust the text color
+        chartDesc.setPosition(scatterChart.getWidth()-90f, scatterChart.getHeight()-45f); // Position the description (x, y)
+        scatterChart.setDescription(chartDesc);
+
         scatterChart.invalidate();
 
     }

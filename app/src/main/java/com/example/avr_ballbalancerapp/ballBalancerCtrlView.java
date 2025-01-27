@@ -199,7 +199,7 @@ public class ballBalancerCtrlView extends View {
         canvas.drawText("Kd: ",mKd_Rect.left,mKd_Rect.top+mPaintTextOrangeDark.getTextSize(),mPaintTextOrangeDark);
         canvas.drawText(Double.toString(mKd_val) ,mKd_Rect.left+70,mKd_Rect.top+mPaintTextOrangeDark.getTextSize(),mPaintTextNormalBoldGrey);
 
-        canvas.drawText(mPlotNameStr,mPlotName_Rect.left,mPlotName_Rect.top+mPaintTextNormalBoldGrey.getTextSize(),mPaintTextNormalBoldGrey);
+        //canvas.drawText(mPlotNameStr,mPlotName_Rect.left,mPlotName_Rect.top+mPaintTextNormalBoldGrey.getTextSize(),mPaintTextNormalBoldGrey);
         //canvas.drawText("SetPoint",canvas_width/2,canvas_height-10,mPaintTextNormalGrey);
 
 
