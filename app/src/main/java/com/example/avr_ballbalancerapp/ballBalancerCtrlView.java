@@ -370,7 +370,7 @@ public class ballBalancerCtrlView extends View {
 
                             mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SET_Kp_" + mKp_val_str + "_SET_Kp"); // Triggers event
                             //mTCPviewEventListenerInterface.onMessageSentToServer(mTCP_SendString); //Triggers event, notifies outside listeners that message has been sent to server (e.g. command sent to ESP8266)
-
+                            //mCtrlStatus = 1; //Set to 1, because inside MCU the controller goes into "Control mode" when Kd is updated (See mode 13-15)
                             invalidate();
                         }
 
@@ -418,7 +418,7 @@ public class ballBalancerCtrlView extends View {
                             mKi_val = Double.parseDouble(mKi_val_str);
 
                             mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SET_Ki_" + mKi_val_str + "_SET_Ki"); // Triggers event
-
+                            //mCtrlStatus = 1; //Set to 1, because inside MCU the controller goes into "Control mode" when Kd is updated (See mode 13-15)
                             invalidate();
                         }
 
@@ -467,7 +467,7 @@ public class ballBalancerCtrlView extends View {
                             mKd_val = Double.parseDouble(mKd_val_str);
 
                             mBallBalancerCtrlViewEventListener.onSendMessageToTCP_Server("SET_Kd_" + mKd_val_str + "_SET_Kd"); // Triggers event
-
+                            //mCtrlStatus = 1; //Set to 1, because inside MCU the controller goes into "Control mode" when Kd is updated (See mode 13-15)
                             invalidate();
                         }
 
