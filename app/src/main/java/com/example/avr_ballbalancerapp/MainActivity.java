@@ -9,10 +9,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -44,7 +42,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,11 +69,14 @@ public class MainActivity extends AppCompatActivity {
     private Instant timestampControlStartTime; //Set when "CTRL_START_CTRL" is sent to MCU.
     private Instant timestampControlEndTime;  //Set when data is received back.
     private Duration timestampControlDuration; //Calculated the "duration". Which can be used to calculate the approximate time between datapoints.
+
+    private Instant timestampControlStartTimeMode11; //Set when "CTRL_START_CTRL" is sent to MCU.
+    private Instant timestampControlEndTimeMode11;  //Set when data is received back.
+    private Duration timestampControlDurationMode11;
+    private float timestampControlDurationMode11Milliseconds;
+
     private int newSetpoint = 120; //Start-Condition, same as AVR.
     private IDataSet<Entry> iDataSet;
-    private ScatterDataSet PV_LineDataSet; //Process Variable (e.g. mm distance)
-    private ScatterDataSet CV_LineDataSet; //Control Variable
-    private ScatterDataSet set1, set2;
 
     private SeekBar setPointSeekBar;
     private TextView tvSetPoint;
@@ -201,9 +201,22 @@ public class MainActivity extends AppCompatActivity {
                 {
                     //Code to set Kp, so that we can store the value
                 }
-
-                Snackbar snackbar2 = Snackbar.make(findViewById(R.id.TCPview),"Msg Length: " + String.valueOf(msg.length()) + " Received",Snackbar.LENGTH_LONG);
-                snackbar2.show();
+                else if (msg.contains("TIMER_START"))
+                {
+                    timestampControlStartTimeMode11 = Instant.now();
+                }
+                else if (msg.contains("TIMER_STOP"))
+                {
+                    timestampControlEndTimeMode11 = Instant.now();
+                    timestampControlDurationMode11 = Duration.between(timestampControlStartTimeMode11,timestampControlEndTimeMode11);
+                    timestampControlDurationMode11Milliseconds = timestampControlDurationMode11.toNanos()/1e6f/500f; //From nS to mS = 1e9/1000=1e6 factor
+                    Snackbar snackbar2 = Snackbar.make(findViewById(R.id.TCPview),"Controller CycleTime [ms]: " + String.format("%.3f", timestampControlDurationMode11Milliseconds) ,Snackbar.LENGTH_LONG);
+                    snackbar2.show();
+                }
+                else {
+                    Snackbar snackbar2 = Snackbar.make(findViewById(R.id.TCPview),"Msg Length: " + String.valueOf(msg.length()) + " Received",Snackbar.LENGTH_LONG);
+                    snackbar2.show();
+                }
 
             }
 

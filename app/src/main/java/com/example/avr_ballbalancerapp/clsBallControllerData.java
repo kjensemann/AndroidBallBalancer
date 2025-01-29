@@ -6,12 +6,9 @@ import android.util.Log;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.EntryXComparator;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -114,7 +111,7 @@ public class clsBallControllerData {
     }
 
     public void setDurationOfDataCollection(Duration durationOfDataCollection) {
-        durationOfDataCollectionInSeconds = durationOfDataCollection.toNanos()/1e9;
+        durationOfDataCollectionInSeconds = durationOfDataCollection.toNanos()/1e9; // [Seconds]
         frequencyOfDataCollectionInMilliseconds = (durationOfDataCollectionInSeconds-0.1)/((double)PID_OutputArray.length)*1000; //I subtract the delays (-0.1 S = 100ms) added inside the MCU before the control starts.
 
         this.durationOfDataCollection = durationOfDataCollection;
