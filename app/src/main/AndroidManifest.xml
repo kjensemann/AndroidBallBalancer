@@ -16,7 +16,8 @@
         android:roundIcon="@drawable/fbdb_plain_512x512"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,8 +29,9 @@
         <activity
             android:name=".settingsActivity"
             android:descendantFocusability="beforeDescendants"
-            android:windowSoftInputMode="adjustPan"
-            ></activity>
+            android:windowSoftInputMode="adjustPan">
+
+        </activity>
     </application>
 
 </manifest>
